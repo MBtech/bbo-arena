@@ -3,8 +3,12 @@
 ## Blackbox optimization algorithms (under test)
 - SMAC -> There is a problem with SMAC on MacOS
 - CMA-ES -> CMA-ES doesn't seem to have bounds on the search space and it is designed completely for a continuous search space
-- GpyOpt
+- GpyOpt -> Working
+- HyperOpt -> Working
+- Solid -> StochasticHillClimb(Done), Others (In progress)
 
+**Note on Solid**
+Solid hasn't been updated for Python3. However, I am working on an implementation to transition the project to Python3.
 
 ## Installation
 Since I have included scout repo as a submodule if you clone this repo use
@@ -19,4 +23,4 @@ If you are on mac make sure that you have xcode tools installed using
 Make sure you have swig 3 and not version 4.
 `apt-get install swig` or `brew install swig@3` if you are on mac
 `pip install cython`
-`pip install smac[all] cma gpyopt`
+`pip install smac[all] cma gpyopt hyperopt solidpy`

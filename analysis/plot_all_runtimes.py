@@ -38,6 +38,7 @@ fig, ax = plt.subplots()
 i=1
 for key in runtimes.keys():
     print(np.array(runtimes[key])/np.min(runtimes[key])<1.1)
+    print(np.min(runtimes[key]))
     plt.boxplot(np.array(runtimes[key])/np.min(runtimes[key]), positions=[i], widths=0.7)
     i+=1
 plt.xlim(0, 3)
