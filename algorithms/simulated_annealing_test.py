@@ -1,4 +1,4 @@
-from Solid.StochasticHillClimb import StochasticHillClimb
+from Solid.SimulatedAnnealing import SimulatedAnnealing
 import numpy as np
 import copy
 import sys
@@ -14,7 +14,8 @@ def get_runtime(parent_dir, app, system, datasize, type, size, num):
 
 ## Resource oblivious hill climbing
 ## Neighbors aren't selected based on step increase in resources
-class Algorithm(StochasticHillClimb):
+class Algorithm(SimulatedAnnealing):
+    count = 0
     parent_dir = '../scout/dataset/osr_multiple_nodes/'
     types = [ "c4", "m4", "r4"]
     sizes = ["large", "xlarge", "2xlarge"]
@@ -26,12 +27,14 @@ class Algorithm(StochasticHillClimb):
     app =''
     system =''
     datasize = ''
+    trials = dict()
 
-    def __init__(self, initial_state, temp, max_steps, app, system, datasize):
-        super().__init__(initial_state, temp, max_steps)
+    def __init__(self, initial_state, temp_begin, schedule_constant, max_steps, app, system, datasize):
+        super().__init__(initial_state, temp_begin, schedule_constant, max_steps)
         self.app = app
         self.system = system
         self.datasize=datasize
+        self.trials = dict()
 
     def neighborhood(self, state):
         neighborhood = list()
@@ -84,16 +87,22 @@ class Algorithm(StochasticHillClimb):
         neighbors = self.neighborhood(self.current_state)
         return neighbors[np.random.choice(len(neighbors), 1)[0]]
 
-    def _objective(self, state):
-        # df = self.df
+    def _energy(self, state):
         print(state)
-        runtime = get_runtime(self.parent_dir, self.app, self.system, self.datasize,
-                state["type"], state["size"], state["num_nodes"])
-        return -(runtime)
+        key = tuple(sorted(state.items()))
+        if key not in self.trials.keys():
+            runtime = get_runtime(self.parent_dir, self.app, self.system, self.datasize,
+                    state["type"], state["size"], state["num_nodes"])
+            self.count+=1
+            print("Total Executions: " + str(self.count))
+            self.trials[key] = runtime
+        else:
+            runtime = self.trials[key]
+        return runtime
 
 def test_algorithm(app, system, datasize):
     state = {"type": "m4", "size": "large" ,"num_nodes": 4}
-    algorithm = Algorithm(state, 100, 15, app, system, datasize)
+    algorithm = Algorithm(state, 100, 0.7, 15, app, system, datasize)
     best_solution, best_objective_value = algorithm.run()
     print(best_solution)
     print(best_objective_value)

@@ -1,4 +1,4 @@
-from Solid.StochasticHillClimb import StochasticHillClimb
+from Solid.TabuSearch import TabuSearch
 import numpy as np
 import copy
 import sys
@@ -11,10 +11,11 @@ def get_runtime(parent_dir, app, system, datasize, type, size, num):
     report = json.load(open(jsonName, 'r'))
     print(float(report["elapsed_time"]))
     return float(report["elapsed_time"])
-
+    
 ## Resource oblivious hill climbing
 ## Neighbors aren't selected based on step increase in resources
-class Algorithm(StochasticHillClimb):
+class Algorithm(TabuSearch):
+    count = 0
     parent_dir = '../scout/dataset/osr_multiple_nodes/'
     types = [ "c4", "m4", "r4"]
     sizes = ["large", "xlarge", "2xlarge"]
@@ -27,13 +28,14 @@ class Algorithm(StochasticHillClimb):
     system =''
     datasize = ''
 
-    def __init__(self, initial_state, temp, max_steps, app, system, datasize):
-        super().__init__(initial_state, temp, max_steps)
+    def __init__(self, initial_state, tabu_size, max_steps, app, system, datasize):
+        super().__init__(initial_state, tabu_size, max_steps)
         self.app = app
         self.system = system
         self.datasize=datasize
 
-    def neighborhood(self, state):
+    def _neighborhood(self):
+        state = self.current
         neighborhood = list()
         for key in state.keys():
             if key == "type":
@@ -80,20 +82,18 @@ class Algorithm(StochasticHillClimb):
                     neighborhood.append(neighbor)
         return neighborhood
 
-    def _neighbor(self):
-        neighbors = self.neighborhood(self.current_state)
-        return neighbors[np.random.choice(len(neighbors), 1)[0]]
-
-    def _objective(self, state):
-        # df = self.df
+    def _score(self, state):
+        self.count+=1
+        print("Total Executions: " + str(self.count))
         print(state)
         runtime = get_runtime(self.parent_dir, self.app, self.system, self.datasize,
                 state["type"], state["size"], state["num_nodes"])
+        print(runtime)
         return -(runtime)
 
 def test_algorithm(app, system, datasize):
     state = {"type": "m4", "size": "large" ,"num_nodes": 4}
-    algorithm = Algorithm(state, 100, 15, app, system, datasize)
+    algorithm = Algorithm(state, 5, 15, app, system, datasize)
     best_solution, best_objective_value = algorithm.run()
     print(best_solution)
     print(best_objective_value)
