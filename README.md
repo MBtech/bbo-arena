@@ -1,11 +1,19 @@
 # bbo-arena
 
-## Blackbox optimization algorithms (under test)
-- SMAC -> There is a problem with SMAC on MacOS
-- CMA-ES -> CMA-ES doesn't seem to have bounds on the search space and it is designed completely for a continuous search space
+## Blackbox optimization libraries/algorithms (under test)
+- SMAC -> Working using pysmac (There is a problem with SMACv3 on MacOS)
+- [CMA-ES](https://github.com/CMA-ES/pycma) -> CMA-ES doesn't seem to have bounds on the search space and it is designed completely for a continuous search space
 - GpyOpt -> Working
 - HyperOpt -> Working
-- Solid -> StochasticHillClimb(Done), Others (In progress)
+- Solid -> StochasticHillClimb, SimulatedAnnealing, TabuSearch(Done), Others (In progress)
+- BBopt (Wrapper for Hyperopt and scikit optimize) -> WIP
+
+**Other potential algorithms**
+Iterated local search
+Variable neighborhood search
+Guided local search
+Kriging Surrogate model ([Model based optimization library in R](https://github.com/mlr-org/mlrMBO))
+SVM Surrogate model
 
 **Note on Solid**
 Solid hasn't been updated for Python3. However, I am working on an implementation to transition the project to Python3.
@@ -24,7 +32,15 @@ If you are on mac make sure that you have xcode tools installed using
 
 `apt-get install swig` or `brew install swig@3` if you are on mac. Make sure you have swig 3 and not version 4.
 
-`pip install cython smac[all] cma gpyopt hyperopt solidpy`
+`pip install cython smac[all] cma gpyopt hyperopt solidpy pysmac`
+
+## Notes:
+Single solution based [metaheuristics methods](https://en.wikipedia.org/wiki/Metaheuristic) are more appropriate for cloud configuration problem
+
+Guided local search is a special case of tabu search.
+
+Hill climbing (with restart) is a case of iterated local search.
+
 
 ## TODO:
 - The libraries need to be modified in case of continuous optimization algorithms cases so that same configurations aren't counted twice.
