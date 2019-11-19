@@ -6,7 +6,7 @@
 - GpyOpt -> Working
 - HyperOpt -> Working
 - Solid -> StochasticHillClimb, SimulatedAnnealing, TabuSearch(Done), Others (In progress)
-- BBopt (Wrapper for Hyperopt and scikit optimize) -> WIP
+- BBopt (Wrapper for Hyperopt and scikit optimize) -> Working
 
 **Other potential algorithms**
 Iterated local search
@@ -32,7 +32,7 @@ If you are on mac make sure that you have xcode tools installed using
 
 `apt-get install swig` or `brew install swig@3` if you are on mac. Make sure you have swig 3 and not version 4.
 
-`pip install cython smac[all] cma gpyopt hyperopt solidpy pysmac`
+`pip install cython smac[all] cma gpyopt hyperopt solidpy pysmac bbopt`
 
 ## Notes:
 Single solution based [metaheuristics methods](https://en.wikipedia.org/wiki/Metaheuristic) are more appropriate for cloud configuration problem
