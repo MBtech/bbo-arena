@@ -1,12 +1,12 @@
 # bbo-arena
 
 ## Blackbox optimization libraries/algorithms (under test)
-- SMAC -> Working using pysmac (There is a problem with SMACv3 on MacOS)
+- SMAC -> Working using [pysmac](https://github.com/automl/pysmac) (There is a problem with [SMACv3](https://github.com/automl/SMAC3) on MacOS)
 - [CMA-ES](https://github.com/CMA-ES/pycma) -> CMA-ES doesn't seem to have bounds on the search space and it is designed completely for a continuous search space
-- GpyOpt -> Working
-- HyperOpt -> Working
-- Solid -> StochasticHillClimb, SimulatedAnnealing, TabuSearch(Done), Others (In progress)
-- BBopt (Wrapper for Hyperopt and scikit optimize) -> Working
+- [GpyOpt](https://github.com/SheffieldML/GPyOpt) -> Working
+- [HyperOpt](https://github.com/hyperopt/hyperopt) -> Working
+- [Solid](https://github.com/MBtech/Solid) -> StochasticHillClimb, SimulatedAnnealing, TabuSearch(Done), Others (In progress)
+- [BBopt](https://github.com/evhub/bbopt) (Wrapper for Hyperopt and scikit optimize) -> Working
 
 **Other potential algorithms**
 Iterated local search
@@ -14,10 +14,12 @@ Variable neighborhood search
 Guided local search
 Kriging Surrogate model ([Model based optimization library in R](https://github.com/mlr-org/mlrMBO))
 SVM Surrogate model
+[Optunity](https://optunity.readthedocs.io/en/latest/user/solvers.html)
 
 **Note on Solid**
 Solid hasn't been updated for Python3. However, I am working on an implementation to transition the project to Python3.
-Both tabu search and simulated annealing do more function evaluations that the maximum number of steps
+Both tabu search and simulated annealing do more function evaluations than the maximum number of steps.
+
 
 ## Installation
 Since I have included scout repo as a submodule if you clone this repo use
@@ -41,6 +43,7 @@ Guided local search is a special case of tabu search.
 
 Hill climbing (with restart) is a case of iterated local search.
 
+Algorithms such as genetic algorithms and evolutionary algorithms are use multiple solutions aren't appropriate because of the number of samples they require to be useful.
 
 ## TODO:
 - The libraries need to be modified in case of continuous optimization algorithms cases so that same configurations aren't counted twice.
