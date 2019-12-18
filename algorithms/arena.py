@@ -1,5 +1,7 @@
 import sys
-from lhssearch_test import *
+from lhssearch import *
+from randsearch import *
+from smac import *
 
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
@@ -16,5 +18,7 @@ system = sys.argv[2]
 datasize = 'huge'
 budget = 15
 
-search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+# search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+# search = randSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 search.runOptimizer()

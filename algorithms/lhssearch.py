@@ -3,8 +3,9 @@ import os
 import json
 import sys
 from pyDOE import *
+from optimizer import optimizer
 
-class lhsSearch():
+class lhsSearch(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
         self.app = app
         self.system = system
