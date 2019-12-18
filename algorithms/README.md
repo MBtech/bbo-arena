@@ -1,5 +1,6 @@
 # Algorithms and Libraries
 - Random Search: Manually implemented
+- LHS Search: using pyDOE 
 
 
 # Other Options:
