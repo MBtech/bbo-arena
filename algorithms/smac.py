@@ -7,6 +7,15 @@ import pysmac
 from optimizer import optimizer
 
 class smac(optimizer):
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
+        parameter_space= {'x1':('categorical', [0, 1, 2], 1),
+                        'x2':('integer', [0, 2], 1),
+                        'x3':('integer', [0, 9], 1)
+                        }):
+        self.parameter_space = parameter_space
+        super(smac, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+
+
     def convertToConfig(self, x):
         type = self.types[int(round(x[0]))]
         size = self.sizes[int(round(x[1]))]
@@ -15,7 +24,6 @@ class smac(optimizer):
         return type, size, num
 
     def getRuntime(self, x1, x2, x3):
-        print(x1, x2, x3)
         x = [x1, x2, x3]
         type, size, num = self.convertToConfig(x)
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" + self.system + "_" + self.datasize + "_1/"
@@ -31,12 +39,8 @@ class smac(optimizer):
         #                        rng=3)
 
         opt = pysmac.SMAC_optimizer()
-        parameters= {'x1':('integer', [0, 2], 1),
-                    'x2':('integer', [0, 2], 1),
-                    'x3':('integer', [0, 9], 1)
-                    }
         value, parameters = opt.minimize(
                             self.getRuntime,
-                            10,
-                            parameters)
+                            self.budget,
+                            self.parameter_space)
         print(value, parameters)

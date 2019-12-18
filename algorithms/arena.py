@@ -2,6 +2,7 @@ import sys
 from lhssearch import *
 from randsearch import *
 from smac import *
+from tpe import *
 
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
@@ -20,5 +21,6 @@ budget = 15
 
 # search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = randSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
-search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+# search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 search.runOptimizer()
