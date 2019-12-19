@@ -3,7 +3,8 @@ from lhssearch import *
 from randsearch import *
 from smac import *
 from tpe import *
-
+from bogpyopt import *
+from boskopt import boSkOpt
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
 'xlarge': [4, 6, 8, 10, 12, 16, 20, 24],
@@ -22,5 +23,8 @@ budget = 15
 # search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = randSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
-search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+# search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+# search = boGPyOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+
 search.runOptimizer()
