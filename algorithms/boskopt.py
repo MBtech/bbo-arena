@@ -30,7 +30,7 @@ class boSkOpt(optimizer):
         return type, size, num
 
     def getRuntime(self, x):
-        # print(x)
+        print(x)
         type, size, num = self.convertToConfig(x)
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
@@ -40,10 +40,14 @@ class boSkOpt(optimizer):
 
     def runOptimizer(self):
         if self.optimizer=='gp':
-            res = gp_minimize(self.getRuntime, self.domain, n_calls=self.budget, n_random_starts=3)
+            res = gp_minimize(self.getRuntime, self.domain, n_calls=self.budget,
+                        n_random_starts=self.initial_samples)
         elif self.optimizer=='gbrt':
-            res = gbrt_minimize(self.getRuntime, self.domain, n_calls=self.budget, n_random_starts=3)
+            res = gbrt_minimize(self.getRuntime, self.domain, n_calls=self.budget,
+                    n_random_starts=self.initial_samples)
         elif self.optimizer=='forest':
-            res = forest_minimize(self.getRuntime, self.domain, n_calls=self.budget, n_random_starts=3)
+            res = forest_minimize(self.getRuntime, self.domain, n_calls=self.budget,
+                    n_random_starts=self.initial_samples)
+                    
         print(res['fun'], res['x'])
 # print(myBopt.get_evaluations())

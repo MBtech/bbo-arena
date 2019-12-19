@@ -25,6 +25,7 @@ budget = 15
 # search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = boGPyOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
-search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
+                    optimizer='forest', initial_samples=5)
 
 search.runOptimizer()

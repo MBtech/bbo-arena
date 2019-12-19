@@ -9,3 +9,6 @@
 - Grid Search: sklearn (Exhaustive)
 - Random Search: sklearn (Specific random distribution). Also available in Hyperopt
 - BO with GPy: [GPyOpt](https://gpyopt.readthedocs.io/en/latest/#)
+
+## Notes:
+As far as I know Skopt uses random sampling. Sobol sampling has been discussed in the github issues but it hasn't been included yet.
