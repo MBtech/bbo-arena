@@ -2,14 +2,13 @@ import numpy as np
 import os
 import json
 import sys
-from skopt import gp_minimize
-from skopt import gbrt_minimize
-from skopt import forest_minimize
+from skopt import gp_minimize, gbrt_minimize, forest_minimize, Optimizer
 from optimizer import optimizer
 from skopt.space import Real, Integer, Categorical
 
 class boSkOpt(optimizer):
-    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, optimizer='gp',
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
+                            number_of_nodes, optimizer='GP', acquisition_method='EI', 
                                                 initial_samples=3, seed=1):
         super(boSkOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
         self.domain = [
@@ -39,15 +38,34 @@ class boSkOpt(optimizer):
 
 
     def runOptimizer(self):
-        if self.optimizer=='gp':
-            res = gp_minimize(self.getRuntime, self.domain, n_calls=self.budget,
-                        n_random_starts=self.initial_samples)
-        elif self.optimizer=='gbrt':
-            res = gbrt_minimize(self.getRuntime, self.domain, n_calls=self.budget,
-                    n_random_starts=self.initial_samples)
-        elif self.optimizer=='forest':
-            res = forest_minimize(self.getRuntime, self.domain, n_calls=self.budget,
-                    n_random_starts=self.initial_samples)
-                    
-        print(res['fun'], res['x'])
+        # if self.optimizer=='gp':
+        #     res = gp_minimize(self.getRuntime, self.domain, n_calls=self.budget,
+        #                 n_random_starts=self.initial_samples)
+        # elif self.optimizer=='gbrt':
+        #     res = gbrt_minimize(self.getRuntime, self.domain, n_calls=self.budget,
+        #             n_random_starts=self.initial_samples)
+        # elif self.optimizer=='forest':
+        #     res = forest_minimize(self.getRuntime, self.domain, n_calls=self.budget,
+        #             n_random_starts=self.initial_samples)
+        opt = Optimizer(self.domain, base_estimator=self.optimizer, n_random_starts=self.initial_samples)
+        count = 0
+        trails = list()
+        results = list()
+        min_x = list()
+        min_val = 10000
+        while count < self.budget:
+            next_x = opt.ask()
+            if next_x not in trails:
+                f_val = self.getRuntime(next_x)
+                count +=1
+                if f_val < min_val:
+                    min_val = f_val
+                    min_x = next_x
+                trails.append(next_x)
+                results.append(f_val)
+            else:
+                f_val = results[trails.index(next_x)]
+            opt.tell(next_x, f_val)
+
+        print(min_val, min_x)
 # print(myBopt.get_evaluations())

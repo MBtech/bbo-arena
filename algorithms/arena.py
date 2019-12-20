@@ -5,6 +5,7 @@ from smac import *
 from tpe import *
 from bogpyopt import *
 from boskopt import boSkOpt
+from hillclimbing import hcOpt
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
 'xlarge': [4, 6, 8, 10, 12, 16, 20, 24],
@@ -25,7 +26,7 @@ budget = 15
 # search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = boGPyOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
-search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
-                    optimizer='forest', initial_samples=5)
-
+# search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
+#                     optimizer='RF', initial_samples=5, acquisition_method='EI')
+search = hcOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 search.runOptimizer()

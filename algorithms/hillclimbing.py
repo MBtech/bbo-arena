@@ -3,6 +3,7 @@ import numpy as np
 import copy
 import sys
 import json
+from optimizer import optimizer
 
 def get_runtime(parent_dir, app, system, datasize, type, size, num):
     print(type, size, num)
@@ -15,23 +16,16 @@ def get_runtime(parent_dir, app, system, datasize, type, size, num):
 ## Resource oblivious hill climbing
 ## Neighbors aren't selected based on step increase in resources
 class Algorithm(StochasticHillClimb):
-    parent_dir = '../scout/dataset/osr_multiple_nodes/'
-    types = [ "c4", "m4", "r4"]
-    sizes = ["large", "xlarge", "2xlarge"]
-    node_sizes = {
-        'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
-        'xlarge': [4, 6, 8, 10, 12, 16, 20, 24],
-        '2xlarge': [4, 6, 8, 10, 12]
-    }
-    app =''
-    system =''
-    datasize = ''
-
-    def __init__(self, initial_state, temp, max_steps, app, system, datasize):
+    def __init__(self, initial_state, temp, max_steps, app, system, datasize,
+                    parent_dir, number_of_nodes,types, sizes):
         super().__init__(initial_state, temp, max_steps)
         self.app = app
         self.system = system
         self.datasize=datasize
+        self.parent_dir = parent_dir
+        self.number_of_nodes = number_of_nodes
+        self.types = types
+        self.sizes = sizes
 
     def neighborhood(self, state):
         neighborhood = list()
@@ -58,25 +52,25 @@ class Algorithm(StochasticHillClimb):
                     neighbor = copy.deepcopy(state)
                     neighbor["type"] = family
                     neighbor["size"] = self.sizes[ind-1]
-                    neighbor["num_nodes"] = self.node_sizes[self.sizes[ind-1]][self.node_sizes[size].index(state["num_nodes"])]
+                    neighbor["num_nodes"] = self.number_of_nodes[self.sizes[ind-1]][self.number_of_nodes[size].index(state["num_nodes"])]
                     neighborhood.append(neighbor)
                 if ind+1 < len(self.sizes):
                     neighbor = copy.deepcopy(state)
                     neighbor["type"] = family
                     neighbor["size"] = self.sizes[ind+1]
-                    neighbor["num_nodes"] = self.node_sizes[self.sizes[ind+1]][self.node_sizes[size].index(state["num_nodes"])]
+                    neighbor["num_nodes"] = self.number_of_nodes[self.sizes[ind+1]][self.number_of_nodes[size].index(state["num_nodes"])]
                     neighborhood.append(neighbor)
             else:
                 family = state["type"]
                 size = state["size"]
-                ind = self.node_sizes[size].index(state["num_nodes"])
+                ind = self.number_of_nodes[size].index(state["num_nodes"])
                 if ind-1 >= 0:
                     neighbor = copy.deepcopy(state)
-                    neighbor["num_nodes"] = self.node_sizes[size][ind-1]
+                    neighbor["num_nodes"] = self.number_of_nodes[size][ind-1]
                     neighborhood.append(neighbor)
-                if ind+1 < len(self.node_sizes[size]):
+                if ind+1 < len(self.number_of_nodes[size]):
                     neighbor = copy.deepcopy(state)
-                    neighbor["num_nodes"] = self.node_sizes[size][ind+1]
+                    neighbor["num_nodes"] = self.number_of_nodes[size][ind+1]
                     neighborhood.append(neighbor)
         return neighborhood
 
@@ -91,13 +85,20 @@ class Algorithm(StochasticHillClimb):
                 state["type"], state["size"], state["num_nodes"])
         return -(runtime)
 
-def test_algorithm(app, system, datasize):
-    state = {"type": "m4", "size": "large" ,"num_nodes": 4}
-    algorithm = Algorithm(state, 100, 15, app, system, datasize)
-    best_solution, best_objective_value = algorithm.run()
-    print(best_solution)
-    print(best_objective_value)
+class hcOpt(optimizer):
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
+                            number_of_nodes, temp = 100,
+                            init_state={"type": "m4", "size": "large" ,"num_nodes": 4}):
+        super(hcOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        self.init_state = init_state
+        self.temp = temp
 
-app, system = sys.argv[1], sys.argv[2]
-datasize = "huge"
-test_algorithm(app, system, datasize)
+    def getRuntime(self):
+        pass
+        
+    def runOptimizer(self):
+        algorithm = Algorithm(self.init_state, self.temp, self.budget, self.app,
+                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes)
+        best_solution, best_objective_value = algorithm.run()
+        print(best_solution)
+        print(best_objective_value)
