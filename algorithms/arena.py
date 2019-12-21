@@ -6,6 +6,8 @@ from tpe import *
 from bogpyopt import *
 from boskopt import boSkOpt
 from hillclimbing import hcOpt
+from simulatedannealing import saOpt
+
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
 'xlarge': [4, 6, 8, 10, 12, 16, 20, 24],
@@ -30,5 +32,8 @@ budget = 15
 #                     optimizer='RF', initial_samples=5, acquisition_method='EI')
 
 # Send in budget -1 because the initial state evaluation isn't included in the budget
-search = hcOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
+# search = hcOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
+
+search = saOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
+
 search.runOptimizer()

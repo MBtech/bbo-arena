@@ -1,4 +1,4 @@
-from Solid.StochasticHillClimb import StochasticHillClimb
+from Solid.SimulatedAnnealing import SimulatedAnnealing
 import numpy as np
 import copy
 import sys
@@ -14,14 +14,14 @@ def get_runtime(parent_dir, app, system, datasize, type, size, num):
     return float(report["elapsed_time"])
 
 def closest(lst, K):
-
     return lst[min(range(len(lst)), key = lambda i: abs(lst[i]-K))]
+
 ## Resource oblivious hill climbing
 ## Neighbors aren't selected based on step increase in resources
-class Algorithm(StochasticHillClimb):
-    def __init__(self, initial_state, temp, max_steps, app, system, datasize,
+class Algorithm(SimulatedAnnealing):
+    def __init__(self, initial_state, temp, schedule_constant, max_steps, app, system, datasize,
                     parent_dir, number_of_nodes,types, sizes):
-        super().__init__(initial_state, temp, max_steps)
+        super().__init__(initial_state, temp, schedule_constant, max_steps)
         self.app = app
         self.system = system
         self.datasize=datasize
@@ -31,6 +31,7 @@ class Algorithm(StochasticHillClimb):
         self.sizes = sizes
         self.trials = list()
         self.results = list()
+        self.count = 0
 
     def neighborhood(self, state, step=1):
         neighborhood = list()
@@ -96,31 +97,32 @@ class Algorithm(StochasticHillClimb):
             return state
         return neighbors[np.random.choice(len(neighbors), 1)[0]]
 
-    def _objective(self, state):
-        # df = self.df
-        if state in self.trials:
-            return self.results[self.trials.index(state)]
-        else:
-            # print(state)
+    def _energy(self, state):
+        if state not in self.trials:
             runtime = get_runtime(self.parent_dir, self.app, self.system, self.datasize,
                     state["type"], state["size"], state["num_nodes"])
+            self.count+=1
+            # print("Total Executions: " + str(self.count))
             self.trials.append(state)
-            self.results.append(-(runtime))
-            return -(runtime)
+            self.results.append(runtime)
+        else:
+            runtime = self.results[self.trials.index(state)]
+        return runtime
 
-class hcOpt(optimizer):
+class saOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, temp = 100,
+                            number_of_nodes, temp = 100, schedule_constant=0.7,
                             init_state={"type": "m4", "size": "large" ,"num_nodes": 4}):
-        super(hcOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        super(saOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
         self.init_state = init_state
         self.temp = temp
+        self.schedule_constant = schedule_constant
 
     def getRuntime(self):
         pass
 
     def runOptimizer(self):
-        algorithm = Algorithm(self.init_state, self.temp, self.budget, self.app,
+        algorithm = Algorithm(self.init_state, self.temp, self.schedule_constant, self.budget, self.app,
                     self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes)
         best_solution, best_objective_value = algorithm.run()
         print(best_solution)
