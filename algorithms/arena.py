@@ -28,12 +28,11 @@ budget = 15
 # search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
 # search = boGPyOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
-# search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
-#                     optimizer='RF', initial_samples=5, acquisition_method='EI')
+search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
+                    optimizer='RF', initial_samples=6)
 
 # Send in budget -1 because the initial state evaluation isn't included in the budget
 # search = hcOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
-
-search = saOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
+# search = saOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
 
 search.runOptimizer()

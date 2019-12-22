@@ -8,7 +8,7 @@ from skopt.space import Real, Integer, Categorical
 
 class boSkOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, optimizer='GP', acquisition_method='EI', 
+                            number_of_nodes, optimizer='GP', acquisition_method='EI',
                                                 initial_samples=3, seed=1):
         super(boSkOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
         self.domain = [
@@ -19,6 +19,7 @@ class boSkOpt(optimizer):
         self.optimizer = optimizer
         self.seed = seed
         self.initial_samples = initial_samples
+        self.acquisition_method = acquisition_method
 
     def convertToConfig(self, x):
         # x = bounds(x)
@@ -47,7 +48,11 @@ class boSkOpt(optimizer):
         # elif self.optimizer=='forest':
         #     res = forest_minimize(self.getRuntime, self.domain, n_calls=self.budget,
         #             n_random_starts=self.initial_samples)
-        opt = Optimizer(self.domain, base_estimator=self.optimizer, n_random_starts=self.initial_samples)
+        opt = Optimizer(self.domain, base_estimator=self.optimizer,
+                n_random_starts=self.initial_samples, acq_optimizer="sampling",
+                acq_func=self.acquisition_method,
+                #acq_optimizer_kwargs={'n_points': 100}
+                )
         count = 0
         trails = list()
         results = list()
@@ -67,5 +72,4 @@ class boSkOpt(optimizer):
                 f_val = results[trails.index(next_x)]
             opt.tell(next_x, f_val)
 
-        print(min_val, min_x)
-# print(myBopt.get_evaluations())
+        print(min_val, self.convertToConfig(min_x))
