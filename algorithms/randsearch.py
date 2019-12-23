@@ -37,3 +37,4 @@ class randSearch(optimizer):
                 best_parameters = parameters
 
         print(value, best_parameters)
+        return {'value': value, 'params': best_parameters}

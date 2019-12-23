@@ -30,7 +30,7 @@ class boSkOpt(optimizer):
         return type, size, num
 
     def getRuntime(self, x):
-        print(x)
+        # print(x)
         type, size, num = self.convertToConfig(x)
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
@@ -72,4 +72,7 @@ class boSkOpt(optimizer):
                 f_val = results[trails.index(next_x)]
             opt.tell(next_x, f_val)
 
-        print(min_val, self.convertToConfig(min_x))
+        best_parameters = dict()
+        best_parameters['type'], best_parameters['size'], best_parameters['num'] = self.convertToConfig(min_x)
+        print(min_val, best_parameters)
+        return {'value': min_val, 'params': best_parameters}

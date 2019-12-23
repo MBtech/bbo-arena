@@ -8,7 +8,7 @@ from optimizer import optimizer
 
 class smac(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
-        parameter_space= {'x1':('categorical', [0, 1, 2], 1),
+        parameter_space= {'x1':('categorical', ['m4', 'c4', 'r4'], 'm4'),
                         'x2':('integer', [0, 2], 1),
                         'x3':('integer', [0, 9], 1)
                         }):
@@ -17,7 +17,7 @@ class smac(optimizer):
 
 
     def convertToConfig(self, x):
-        type = self.types[int(round(x[0]))]
+        type = x[0]
         size = self.sizes[int(round(x[1]))]
         index = int(round(x[2])) % len(self.number_of_nodes[size])
         num = self.number_of_nodes[size][index]
@@ -43,4 +43,8 @@ class smac(optimizer):
                             self.getRuntime,
                             self.budget,
                             self.parameter_space)
-        print(value, parameters)
+        best_parameters=dict()
+        best_parameters['type'], best_parameters['size'],  best_parameters['num'] = \
+                        self.convertToConfig([parameters['x1'],parameters['x2'], parameters['x3']])
+        print(value, best_parameters)
+        return {'value': value, 'params': best_parameters}

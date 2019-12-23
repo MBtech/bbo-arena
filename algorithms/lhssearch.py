@@ -21,7 +21,7 @@ class lhsSearch(optimizer):
         size = self.sizes[int(round(x[1] * len(self.sizes)-1))]
         index = int(round(x[2] * len(self.number_of_nodes[size])-1 ))
         num = self.number_of_nodes[size][index]
-        return type, size, num
+        return {'type':type, 'size':size, 'num' :num}
 
     def getRuntime(self, x1, x2, x3):
         type, size, num = [x1, x2, x3]
@@ -39,15 +39,15 @@ class lhsSearch(optimizer):
         count = 0
         for i in range(0, 2*self.budget):
             parameters = self.convertToConfig(lhd[i])
-            val = self.getRuntime(*parameters)
+            val = self.getRuntime(parameters['type'], parameters['size'], parameters['num'])
             if val < value:
                 value = val
                 best_parameters = parameters
             if parameters not in trails:
                 count += 1
-                print(parameters)
                 trails.append(parameters)
             if count == self.budget:
                 break
-        print(len(trails))
         print(value, best_parameters)
+
+        return {'value': value, 'params': best_parameters}
