@@ -28,6 +28,10 @@ class lhsSearch(optimizer):
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
+        trials = pickleRead('trials.pickle', default={'trials':[]})
+        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
+        trials['trials'].append(t)
+        pickleWrite('trials.pickle', trials)
         return float(report["elapsed_time"])
 
     def runOptimizer(self):
@@ -48,6 +52,7 @@ class lhsSearch(optimizer):
                 trails.append(parameters)
             if count == self.budget:
                 break
+        trials = pickleRead('trials.pickle')
         print(value, best_parameters)
 
-        return {'value': value, 'params': best_parameters}
+        return trials

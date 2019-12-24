@@ -40,6 +40,10 @@ class tpeOptimizer(optimizer):
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
         runtime = float(report["elapsed_time"])
+        trials = pickleRead('trials.pickle', default={'trials':[]})
+        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
+        trials['trials'].append(t)
+        pickleWrite('trials.pickle', trials)
         if runtime < 0:
             # ret = {'loss': 3600, 'status': STATUS_OK}
             ret = {'loss': runtime, 'status': STATUS_FAIL}
@@ -63,5 +67,6 @@ class tpeOptimizer(optimizer):
 
         param = space_eval(self.parameter_space, best_parameters)
         value = self.getRuntime(param)
+        trials = pickleRead('trials.pickle')
         print(value['loss'], param)
-        return {'value': value['loss'], 'params': best_parameters}
+        return trials

@@ -9,8 +9,13 @@ from hillclimbing import hcOpt
 from simulatedannealing import saOpt
 import json
 
-def getResult(search):
+def getResult(search, filename):
+    print(filename)
     result = search.runOptimizer()
+    f1 = open('logs/'+filename+'_runtime', 'a')
+    f1.write(str(result['value'])+'\n')
+    f2 = open('logs/'+filename+'_params', 'a')
+    f2.write(str(result['params'])+'\n')
 
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
@@ -31,6 +36,7 @@ for system in config["systems"]:
         for datasize in config["datasizes"]:
             for algo in config["bbo_algos"]:
                 for i in range(0, config["num_of_runs"]):
+                    filename = system + '_' + app + '_' + datasize + '_' + algo
                     if algo == "lhs":
                         search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
                     elif algo == "random":
@@ -45,8 +51,9 @@ for system in config["systems"]:
                     elif algo == "bo":
                         for estimator in config["bo_estimators"]:
                             for acq_method in config["bo_acq"][estimator]:
+                                new_filename = filename + '_' + estimator + '_' + acq_method
                                 search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, optimizer=estimator, initial_samples=6, acquisition_method=acq_method)
-                                search.runOptimizer()
+                                getResult(search, new_filename)
                     elif algo == "hc":
                         # Send in budget -1 because the initial state evaluation isn't included in the budget
                         search = hcOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
@@ -55,7 +62,7 @@ for system in config["systems"]:
 
 
                     if algo != "bo":
-                        search.runOptimizer()
+                        getResult(search, filename)
 
 
 # search = boGPyOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)

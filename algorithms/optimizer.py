@@ -10,6 +10,8 @@ class optimizer(ABC):
         self.types = types
         self.sizes = sizes
         self.number_of_nodes = number_of_nodes
+        self.trials = list()
+        self.results = list()
 
     def convertToConfig(self, x):
         pass

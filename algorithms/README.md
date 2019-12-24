@@ -12,7 +12,15 @@
 - Random Search: sklearn (Specific random distribution). Also available in Hyperopt
 - BO with GPy: [GPyOpt](https://gpyopt.readthedocs.io/en/latest/#)
 
+# TODO:
+- Explore the conditional and forbidden clauses in pysmac
+
+
 ## Notes:
+- pysmac does not allow for an arbitrary number of initial samples except for a single default sample
+
+- I am using forbidden clauses in pysmac to avoid any configuration that will need mapping. 
+
 - As far as I know Skopt uses random sampling. Sobol sampling has been discussed in the github issues but it hasn't been included yet.
 
 - Skopt seems to offer integer and categorical variables but it seems like the acquisition function still picks same configurations again and again. That's why I have shifted to the ask and tell interface.
