@@ -3,6 +3,7 @@ import os
 import json
 import sys
 from optimizer import optimizer
+from utils import *
 
 class randSearch(optimizer):
     # def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
@@ -20,26 +21,29 @@ class randSearch(optimizer):
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
-        trials = pickleRead('trials.pickle', default={'trials':[]})
         t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
-        trials['trials'].append(t)
-        pickleWrite('trials.pickle', trials)
+        updatePickle(t)
         return float(report["elapsed_time"])
 
     def runOptimizer(self):
         trails = list()
+        all_trails = list()
         best_parameters = {}
+        count = 0
         value = 100000
-        for i in range(0, self.budget):
+        while count < self.budget:
             parameters = {}
             parameters['type'] = np.random.choice(self.types)
             parameters['size'] = np.random.choice(self.sizes)
-            parameters['num'] = np.random.choice(self.number_of_nodes[parameters['size']])
+            parameters['num'] = int(np.random.choice(self.number_of_nodes[parameters['size']]))
+            if parameters in all_trails:
+                continue
+            all_trails.append(parameters)
+            count += 1
             val = self.getRuntime(parameters['type'], parameters['size'], parameters['num'])
             if val < value:
                 value = val
                 best_parameters = parameters
-
         print(value, best_parameters)
         trials = pickleRead('trials.pickle')
         return trials

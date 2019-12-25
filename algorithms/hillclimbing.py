@@ -4,6 +4,7 @@ import copy
 import sys
 import json
 from optimizer import optimizer
+from utils import *
 
 def get_runtime(parent_dir, app, system, datasize, type, size, num):
     # print(type, size, num)
@@ -83,7 +84,7 @@ class Algorithm(StochasticHillClimb):
         state = dict()
         state["type"]= np.random.choice(self.types)
         state["size"]= np.random.choice(self.sizes)
-        state["num"]= np.random.choice(self.number_of_nodes[state["size"]])
+        state["num"]= int(np.random.choice(self.number_of_nodes[state["size"]]))
         return state
 
     def _neighbor(self):
@@ -102,10 +103,13 @@ class Algorithm(StochasticHillClimb):
             return self.results[self.trials.index(state)]
         else:
             # print(state)
+            type, size, num  = state["type"], state["size"], state["num"]
             runtime = get_runtime(self.parent_dir, self.app, self.system, self.datasize,
-                    state["type"], state["size"], state["num"])
+                    type, size, num)
             self.trials.append(state)
             self.results.append(-(runtime))
+            t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
+            updatePickle(t)
             return -(runtime)
 
 class hcOpt(optimizer):
@@ -123,5 +127,6 @@ class hcOpt(optimizer):
         algorithm = Algorithm(self.init_state, self.temp, self.budget, self.app,
                     self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes)
         best_parameters, value = algorithm.run()
+        trials = pickleRead('trials.pickle')
         print(-value, best_parameters)
-        return {'value': -value, 'params': best_parameters}
+        return trials

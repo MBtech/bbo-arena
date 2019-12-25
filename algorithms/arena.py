@@ -8,14 +8,20 @@ from boskopt import boSkOpt
 from hillclimbing import hcOpt
 from simulatedannealing import saOpt
 import json
+import os
+import time
 
-def getResult(search, filename):
-    print(filename)
-    result = search.runOptimizer()
-    f1 = open('logs/'+filename+'_runtime', 'a')
-    f1.write(str(result['value'])+'\n')
-    f2 = open('logs/'+filename+'_params', 'a')
-    f2.write(str(result['params'])+'\n')
+def getResult(search, filename, dir='logs/'):
+    results = search.runOptimizer()
+    data =dict()
+    # print(results)
+    if os.path.isfile(dir+filename):
+        data = json.load(open(dir+filename, 'r'))
+    else:
+        data['experiments'] = []
+    print(results)
+    data['experiments'].append(results['trials'])
+    json.dump(data, open(dir+filename, 'w'), indent=4)
 
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
@@ -27,7 +33,7 @@ sizes = ['large', 'xlarge', '2xlarge']
 parent_dir = '../scout/dataset/osr_multiple_nodes/'
 
 # python plot_all_runtimes.py pagerank spark
-config = json.load(open('test_configs/all_runs.json', 'r'))
+config = json.load(open('test_configs/single_algo.json', 'r'))
 
 budget = config["budget"]
 
@@ -63,6 +69,7 @@ for system in config["systems"]:
 
                     if algo != "bo":
                         getResult(search, filename)
+
 
 
 # search = boGPyOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)

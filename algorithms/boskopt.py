@@ -5,6 +5,7 @@ import sys
 from skopt import gp_minimize, gbrt_minimize, forest_minimize, Optimizer
 from optimizer import optimizer
 from skopt.space import Real, Integer, Categorical
+from utils import *
 
 class boSkOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
@@ -35,6 +36,8 @@ class boSkOpt(optimizer):
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
+        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
+        updatePickle(t)
         return float(report["elapsed_time"])
 
 
@@ -75,4 +78,5 @@ class boSkOpt(optimizer):
         best_parameters = dict()
         best_parameters['type'], best_parameters['size'], best_parameters['num'] = self.convertToConfig(min_x)
         print(min_val, best_parameters)
-        return {'value': min_val, 'params': best_parameters}
+        trials = pickleRead('trials.pickle')
+        return trials

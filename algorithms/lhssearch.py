@@ -4,6 +4,7 @@ import json
 import sys
 from pyDOE import *
 from optimizer import optimizer
+from utils import *
 
 class lhsSearch(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
@@ -28,10 +29,8 @@ class lhsSearch(optimizer):
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
-        trials = pickleRead('trials.pickle', default={'trials':[]})
         t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
-        trials['trials'].append(t)
-        pickleWrite('trials.pickle', trials)
+        updatePickle(t)
         return float(report["elapsed_time"])
 
     def runOptimizer(self):

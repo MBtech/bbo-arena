@@ -4,6 +4,7 @@ import copy
 import sys
 import json
 from optimizer import optimizer
+from utils import *
 
 def get_runtime(parent_dir, app, system, datasize, type, size, num):
     # print(type, size, num)
@@ -84,7 +85,7 @@ class Algorithm(SimulatedAnnealing):
         state = dict()
         state["type"]= np.random.choice(self.types)
         state["size"]= np.random.choice(self.sizes)
-        state["num"]= np.random.choice(self.number_of_nodes[state["size"]])
+        state["num"]= int(np.random.choice(self.number_of_nodes[state["size"]]))
         return state
 
     def _neighbor(self):
@@ -99,12 +100,15 @@ class Algorithm(SimulatedAnnealing):
 
     def _energy(self, state):
         if state not in self.trials:
+            type, size, num  = state["type"], state["size"], state["num"]
             runtime = get_runtime(self.parent_dir, self.app, self.system, self.datasize,
                     state["type"], state["size"], state["num"])
             self.count+=1
             # print("Total Executions: " + str(self.count))
             self.trials.append(state)
             self.results.append(runtime)
+            t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
+            updatePickle(t)
         else:
             runtime = self.results[self.trials.index(state)]
         return runtime
@@ -126,4 +130,5 @@ class saOpt(optimizer):
                     self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes)
         best_parameters, value = algorithm.run()
         print(value, best_parameters)
-        return {'value': value, 'params': best_parameters}
+        trials = pickleRead('trials.pickle')
+        return trials

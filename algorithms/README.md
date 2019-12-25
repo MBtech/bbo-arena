@@ -13,13 +13,13 @@
 - BO with GPy: [GPyOpt](https://gpyopt.readthedocs.io/en/latest/#)
 
 # TODO:
-- Explore the conditional and forbidden clauses in pysmac
-
+- Explore other machine learning algorithms as the model. No need to use acquisition function just simply evaluate all configurations.
+- Make the code more generic.
 
 ## Notes:
 - pysmac does not allow for an arbitrary number of initial samples except for a single default sample
 
-- I am using forbidden clauses in pysmac to avoid any configuration that will need mapping. 
+- I am using forbidden clauses in pysmac to avoid any configuration that will need mapping.
 
 - As far as I know Skopt uses random sampling. Sobol sampling has been discussed in the github issues but it hasn't been included yet.
 

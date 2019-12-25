@@ -5,6 +5,7 @@ import sys
 from optimizer import optimizer
 import numpy as np
 import re
+from utils import *
 
 class tpeOptimizer(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
@@ -40,10 +41,8 @@ class tpeOptimizer(optimizer):
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
         runtime = float(report["elapsed_time"])
-        trials = pickleRead('trials.pickle', default={'trials':[]})
         t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
-        trials['trials'].append(t)
-        pickleWrite('trials.pickle', trials)
+        updatePickle(t)
         if runtime < 0:
             # ret = {'loss': 3600, 'status': STATUS_OK}
             ret = {'loss': runtime, 'status': STATUS_FAIL}
