@@ -11,7 +11,7 @@ import json
 import os
 import time
 
-def getResult(search, filename, dir='logs/'):
+def getResult(search, filename, dir='logs/', log=True):
     results = search.runOptimizer()
     data =dict()
     # print(results)
@@ -19,9 +19,11 @@ def getResult(search, filename, dir='logs/'):
         data = json.load(open(dir+filename, 'r'))
     else:
         data['experiments'] = []
-    print(results)
+    # print(results)
     data['experiments'].append(results['trials'])
-    json.dump(data, open(dir+filename, 'w'), indent=4)
+
+    if log:
+        json.dump(data, open(dir+filename, 'w'), indent=4)
 
 number_of_nodes = {
 'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],

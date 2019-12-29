@@ -42,15 +42,17 @@ class lhsSearch(optimizer):
         count = 0
         for i in range(0, 2*self.budget):
             parameters = self.convertToConfig(lhd[i])
-            val = self.getRuntime(parameters['type'], parameters['size'], parameters['num'])
+            if parameters not in trails:
+                count += 1
+                val = self.getRuntime(parameters['type'], parameters['size'], parameters['num'])
+                trails.append(parameters)
             if val < value:
                 value = val
                 best_parameters = parameters
-            if parameters not in trails:
-                count += 1
-                trails.append(parameters)
+
             if count == self.budget:
                 break
+
         trials = pickleRead('trials.pickle')
         print(value, best_parameters)
 

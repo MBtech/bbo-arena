@@ -13,7 +13,6 @@
               "random",
               "random2x",
               "tpe",
-              "smac",
               "bo",
               "hc",
               "sa"
@@ -21,9 +20,9 @@
 
 "bo_estimators": ["RF", "ET", "GBRT", "GP"],
 "bo_acq": {
-      "RF": ["LCB", "EI", "PI"],
-      "ET": ["LCB", "EI", "PI"],
-      "GBRT": ["LCB", "EI", "PI"],
-      "GP": ["LCB", "EI", "PI", "gp_hedge"]
+      "RF": ["EI"],
+      "ET": ["EI"],
+      "GBRT": ["EI"],
+      "GP": ["EI"]
     }
 }

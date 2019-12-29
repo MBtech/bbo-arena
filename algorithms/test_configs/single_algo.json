@@ -9,14 +9,7 @@
   "budget": 30,
   "datasizes": ["huge", "bigdata"],
   "bbo_algos": [
-              "lhs",
-              "random",
-              "random2x",
-              "tpe",
-              "smac",
-              "bo",
-              "hc",
-              "sa"
+              "lhs"
             ],
 
 "bo_estimators": ["RF", "ET", "GBRT", "GP"],
@@ -25,5 +18,7 @@
       "ET": ["LCB", "EI", "PI"],
       "GBRT": ["LCB", "EI", "PI"],
       "GP": ["LCB", "EI", "PI", "gp_hedge"]
-    }
+    },
+
+"log": true
 }
