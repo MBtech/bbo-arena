@@ -8,13 +8,16 @@
 - [Solid](https://github.com/MBtech/Solid) -> StochasticHillClimb, SimulatedAnnealing, TabuSearch(Done), Others (In progress)
 - [BBopt](https://github.com/evhub/bbopt) (Wrapper for Hyperopt and scikit optimize) -> Working
 
-**Other potential algorithms**
+**Other potential algorithms/libraries**
 Iterated local search
 Variable neighborhood search
 Guided local search
 Kriging Surrogate model ([Model based optimization library in R](https://github.com/mlr-org/mlrMBO))
 SVM Surrogate model
 [Optunity](https://optunity.readthedocs.io/en/latest/user/solvers.html)
+[Optuna](https://github.com/optuna/optuna)
+[Sherpa](https://github.com/sherpa-ai/sherpa)
+[shgo](https://stefan-endres.github.io/shgo/)
 
 **Note on Solid**
 Solid hasn't been updated for Python3. However, I am working on an implementation to transition the project to Python3.
@@ -34,7 +37,7 @@ If you are on mac make sure that you have xcode tools installed using
 
 `apt-get install swig` or `brew install swig@3` if you are on mac. Make sure you have swig 3 and not version 4.
 
-`pip install cython smac[all] cma gpyopt hyperopt solidpy pysmac bbopt pydoe scikit-optimize` 
+`pip install cython smac[all] cma gpyopt hyperopt solidpy pysmac bbopt pydoe scikit-optimize`
 
 ## Notes:
 Single solution based [metaheuristics methods](https://en.wikipedia.org/wiki/Metaheuristic) are more appropriate for cloud configuration problem
@@ -48,3 +51,7 @@ Algorithms such as genetic algorithms and evolutionary algorithms are use multip
 ## TODO:
 - The libraries need to be modified in case of continuous optimization algorithms cases so that same configurations aren't counted twice.
 - Fix the max number of step case for tabu search and for SimulatedAnnealing since max steps don't equal max function evaluations.
+
+## Tutorials:
+- [On using hyperopt: Advanced Machine Learning](https://blog.goodaudience.com/on-using-hyperopt-advanced-machine-learning-a2dde2ccece7)
+- [Hyperparameter Optimization in Python](https://towardsdatascience.com/hyperparameter-optimization-in-python-part-0-introduction-c4b66791614b)

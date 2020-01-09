@@ -1,5 +1,25 @@
 import json
 
+def getBest(app, system, datasize):
+    parent_dir = '../scout/dataset/osr_multiple_nodes/'
+    number_of_nodes = {
+    'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
+    'xlarge': [4, 6, 8, 10, 12, 16, 20, 24],
+    '2xlarge': [4, 6, 8, 10, 12]
+    }
+    types = ['m4', 'c4', 'r4']
+    sizes = ['large', 'xlarge', '2xlarge']
+
+    runtimes = list()
+    for t in types:
+        for size in sizes:
+            for num in number_of_nodes[size]:
+                dir = parent_dir + str(num) + '_'+ t+'.'+size+ '_'+ app + "_" + system + "_" + datasize + "_1/"
+                jsonName= dir + 'report.json'
+                report = json.load(open(jsonName, 'r'))
+                runtimes.append(float(report["elapsed_time"]))
+    return min(runtimes)
+    
 def parseLogs(system, app, datasize, configJsonName = 'test_configs/all_runs.json'):
     config = json.load(open(configJsonName, 'r'))
 
