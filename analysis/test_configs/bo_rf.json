@@ -1,0 +1,24 @@
+{
+  "systems": ["hadoop", "spark", "spark1.5"],
+  "applications": {
+    "hadoop": ["pagerank", "terasort", "wordcount"],
+    "spark": ["join", "lr", "pagerank"],
+    "spark1.5": ["kmeans", "naive-bayes", "regression"]
+  },
+  "num_of_runs": 100,
+  "budget": 30,
+  "datasizes": ["huge", "bigdata"],
+  "bbo_algos": [
+              "bo"
+            ],
+
+"bo_estimators": ["RF"],
+"bo_acq": {
+      "RF": ["LCB", "EI", "PI"],
+      "ET": ["LCB", "EI", "PI"],
+      "GBRT": ["LCB", "EI", "PI"],
+      "GP": ["LCB", "EI", "PI", "gp_hedge"]
+    },
+
+"log": true
+}

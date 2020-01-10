@@ -24,8 +24,8 @@ def parseLogs(system, app, datasize, configJsonName = 'test_configs/all_runs.jso
     config = json.load(open(configJsonName, 'r'))
 
     budget = config["budget"]
-    # optRuns = config["num_of_runs"]
-    optRuns = 10
+    optRuns = config["num_of_runs"]
+    # optRuns = 10
     logDir = "../algorithms/logs/"
 
     runtimes = list()
@@ -67,9 +67,9 @@ def parseLogs(system, app, datasize, configJsonName = 'test_configs/all_runs.jso
                     for i in range(0, len(singleExpData), 2):
                         count +=1
                         if singleExpData[i]['runtime'] < best_time:
-                            best_time = run['runtime']
+                            best_time = singleExpData[i]['runtime']
                         if singleExpData[i+1]['runtime'] < best_time:
-                            best_time = run['runtime']
+                            best_time = singleExpData[i]['runtime']
                         runtimes.append([algoName, count, best_time, i])
                 else:
                     for run in singleExpData:

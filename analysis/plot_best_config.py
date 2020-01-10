@@ -3,10 +3,18 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils import parseLogs, getBest
+import sys 
 
 steps = [6, 18, 30]
 sns.set(style="whitegrid")
-configJsonName = "test_configs/all_runs.json"
+
+if len(sys.argv) > 1:
+    configJsonName = sys.argv[1]
+    prefix = sys.argv[2]
+else:
+    configJsonName = "test_configs/all_runs.json"
+    prefix = "best"
+    
 config = json.load(open(configJsonName, 'r'))
 for system in config["systems"]:
     for app in config["applications"][system]:
@@ -24,5 +32,6 @@ for system in config["systems"]:
             plt.axhline(best, color='blue')
             plt.title(title)
             plt.legend(loc='upper right', ncol=2, prop={'size': 9})
-            plt.savefig('plots/'+'best_'+ title + '.pdf')
+            plt.savefig('plots/'+prefix+'_'+ title + '.pdf')
             # plt.show()
+            
