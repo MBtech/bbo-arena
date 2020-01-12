@@ -18,11 +18,11 @@
               "sa"
             ],
 
-"bo_estimators": ["RF", "ET", "GBRT", "GP"],
+"bo_estimators": ["GP"],
 "bo_acq": {
-      "RF": ["EI"],
-      "ET": ["EI"],
-      "GBRT": ["EI"],
-      "GP": ["EI"]
+      "RF": ["PI"],
+      "ET": ["PI"],
+      "GBRT": ["PI"],
+      "GP": ["LCB"]
     }
 }

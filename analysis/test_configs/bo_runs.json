@@ -12,13 +12,11 @@
               "bo"
             ],
 
-"bo_estimators": ["GBRT"],
+"bo_estimators": ["RF", "ET", "GBRT", "GP"],
 "bo_acq": {
-      "RF": ["LCB", "EI", "PI"],
-      "ET": ["LCB", "EI", "PI"],
-      "GBRT": ["LCB", "EI", "PI"],
-      "GP": ["LCB", "EI", "PI", "gp_hedge"]
-    },
-
-"log": true
+      "RF": ["PI"],
+      "ET": ["PI"],
+      "GBRT": ["PI"],
+      "GP": ["LCB"]
+    }
 }

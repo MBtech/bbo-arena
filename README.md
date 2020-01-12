@@ -8,18 +8,19 @@
 - [Solid](https://github.com/MBtech/Solid) -> StochasticHillClimb, SimulatedAnnealing, TabuSearch(Done), Others (In progress)
 - [BBopt](https://github.com/evhub/bbopt) (Wrapper for Hyperopt and scikit optimize) -> Working
 
-**Other potential algorithms/libraries**
-Iterated local search
-Variable neighborhood search
-Guided local search
-Kriging Surrogate model ([Model based optimization library in R](https://github.com/mlr-org/mlrMBO))
-SVM Surrogate model
-[Optunity](https://optunity.readthedocs.io/en/latest/user/solvers.html)
-[Optuna](https://github.com/optuna/optuna)
-[Sherpa](https://github.com/sherpa-ai/sherpa)
-[shgo](https://stefan-endres.github.io/shgo/)
+### Other potential algorithms/libraries
+- Iterated local search
+- Variable neighborhood search
+- Guided local search
+- Kriging Surrogate model ([Model based optimization library in R](https://github.com/mlr-org/mlrMBO))
+- SVM Surrogate model
+- [Optunity](https://optunity.readthedocs.io/en/latest/user/solvers.html)
+- [Optuna](https://github.com/optuna/optuna)
+- [Sherpa](https://github.com/sherpa-ai/sherpa)
+- [shgo](https://stefan-endres.github.io/shgo/)
 
 **Note on Solid**
+
 Solid hasn't been updated for Python3. However, I am working on an implementation to transition the project to Python3.
 Both tabu search and simulated annealing do more function evaluations than the maximum number of steps.
 
