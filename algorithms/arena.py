@@ -35,7 +35,7 @@ sizes = ['large', 'xlarge', '2xlarge']
 parent_dir = '../scout/dataset/osr_multiple_nodes/'
 
 # python plot_all_runtimes.py pagerank spark
-config = json.load(open('test_configs/single_algo.json', 'r'))
+config = json.load(open('test_configs/all_runs_select.json', 'r'))
 
 budget = config["budget"]
 

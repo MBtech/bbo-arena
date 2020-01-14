@@ -40,8 +40,11 @@ class tpeOptimizer(optimizer):
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
-        runtime = float(report["elapsed_time"])
-        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
+        if report["completed"]:
+            runtime = float(report["elapsed_time"])
+        else:
+            runtime = 3600.0
+        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
         updatePickle(t)
         if runtime < 0:
             # ret = {'loss': 3600, 'status': STATUS_OK}

@@ -11,8 +11,11 @@ def get_runtime(parent_dir, app, system, datasize, type, size, num):
     dir = parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ app + "_" +system + "_" + datasize + "_1/"
     jsonName= dir + 'report.json'
     report = json.load(open(jsonName, 'r'))
-    # print(float(report["elapsed_time"]))
-    return float(report["elapsed_time"])
+    if report["completed"]:
+        runtime = float(report["elapsed_time"])
+    else:
+        runtime = 3600.0
+    return runtime
 
 def closest(lst, K):
     return lst[min(range(len(lst)), key = lambda i: abs(lst[i]-K))]

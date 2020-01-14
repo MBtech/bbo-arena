@@ -21,9 +21,13 @@ class randSearch(optimizer):
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
-        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
+        if report["completed"]:
+            runtime = float(report["elapsed_time"])
+        else:
+            runtime = 3600.0
+        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
         updatePickle(t)
-        return float(report["elapsed_time"])
+        return runtime
 
     def runOptimizer(self):
         trails = list()

@@ -1,3 +1,5 @@
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import ExtraTreesRegressor
 import numpy as np
 import os
 import json
@@ -7,11 +9,12 @@ from optimizer import optimizer
 from skopt.space import Real, Integer, Categorical
 from utils import *
 
-class boSkOpt(optimizer):
+
+class models(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
                             number_of_nodes, optimizer='GP', acquisition_method='EI',
                                                 initial_samples=3, seed=1):
-        super(boSkOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        super(models, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
         self.domain = [
                 Categorical(self.types),
                 Integer(0, len(self.sizes)-1),
@@ -36,13 +39,9 @@ class boSkOpt(optimizer):
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
         report = json.load(open(jsonName, 'r'))
-        if report["completed"]:
-            runtime = float(report["elapsed_time"])
-        else:
-            runtime = 3600.0
-        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
+        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
         updatePickle(t)
-        return runtime
+        return float(report["elapsed_time"])
 
 
     def runOptimizer(self):
