@@ -6,6 +6,7 @@ from optimizer import optimizer
 import numpy as np
 import re
 from utils import *
+import uuid
 
 class tpeOptimizer(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
@@ -32,6 +33,8 @@ class tpeOptimizer(optimizer):
         self.parameter_space = hp.choice('instance_class', self.classes)
         self.seed = seed
         self.initial_samples = initial_samples
+        self.uuid = uuid.uuid4().hex
+        self.trialsFile = 'trials-'+self.uuid+'.pickle'
 
     def getRuntime(self, args):
         size = args['size']
@@ -45,7 +48,7 @@ class tpeOptimizer(optimizer):
         else:
             runtime = 3600.0
         t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
-        updatePickle(t)
+        updatePickle(t, filename=self.trialsFile)
         if runtime < 0:
             # ret = {'loss': 3600, 'status': STATUS_OK}
             ret = {'loss': runtime, 'status': STATUS_FAIL}
@@ -69,6 +72,6 @@ class tpeOptimizer(optimizer):
 
         param = space_eval(self.parameter_space, best_parameters)
         value = self.getRuntime(param)
-        trials = pickleRead('trials.pickle')
+        trials = pickleRead(self.trialsFile)
         print(value['loss'], param)
         return trials

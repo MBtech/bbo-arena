@@ -6,6 +6,7 @@ from skopt import gp_minimize, gbrt_minimize, forest_minimize, Optimizer
 from optimizer import optimizer
 from skopt.space import Real, Integer, Categorical
 from utils import *
+import uuid
 
 class boSkOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
@@ -21,6 +22,8 @@ class boSkOpt(optimizer):
         self.seed = seed
         self.initial_samples = initial_samples
         self.acquisition_method = acquisition_method
+        self.uuid = uuid.uuid4().hex
+        self.trialsFile = 'trials-'+self.uuid+'.pickle'
 
     def convertToConfig(self, x):
         # x = bounds(x)
@@ -41,7 +44,7 @@ class boSkOpt(optimizer):
         else:
             runtime = 3600.0
         t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
-        updatePickle(t)
+        updatePickle(t, filename=self.trialsFile)
         return runtime
 
 
@@ -82,5 +85,5 @@ class boSkOpt(optimizer):
         best_parameters = dict()
         best_parameters['type'], best_parameters['size'], best_parameters['num'] = self.convertToConfig(min_x)
         print(min_val, best_parameters)
-        trials = pickleRead('trials.pickle')
+        trials = pickleRead(self.trialsFile)
         return trials

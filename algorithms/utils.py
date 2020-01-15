@@ -17,4 +17,4 @@ def pickleRead(filename, default=[]):
 def updatePickle(trial, filename='trials.pickle', default={'trials':[]}):
     trials = pickleRead(filename, default={'trials':[]})
     trials['trials'].append(trial)
-    pickleWrite('trials.pickle', trials)
+    pickleWrite(filename, trials)

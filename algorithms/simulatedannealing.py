@@ -5,6 +5,7 @@ import sys
 import json
 from optimizer import optimizer
 from utils import *
+import uuid
 
 def get_runtime(parent_dir, app, system, datasize, type, size, num):
     # print(type, size, num)
@@ -24,7 +25,7 @@ def closest(lst, K):
 ## Neighbors aren't selected based on step increase in resources
 class Algorithm(SimulatedAnnealing):
     def __init__(self, initial_state, temp, schedule_constant, max_steps, app, system, datasize,
-                    parent_dir, number_of_nodes,types, sizes):
+                    parent_dir, number_of_nodes,types, sizes, trialsFile):
         super().__init__(initial_state, temp, schedule_constant, max_steps)
         self.app = app
         self.system = system
@@ -36,6 +37,7 @@ class Algorithm(SimulatedAnnealing):
         self.trials = list()
         self.results = list()
         self.count = 0
+        self.trialsFile = trialsFile
 
     def neighborhood(self, state, step=1):
         neighborhood = list()
@@ -111,7 +113,7 @@ class Algorithm(SimulatedAnnealing):
             self.trials.append(state)
             self.results.append(runtime)
             t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
-            updatePickle(t)
+            updatePickle(t, filename=self.trialsFile)
         else:
             runtime = self.results[self.trials.index(state)]
         return runtime
@@ -124,14 +126,16 @@ class saOpt(optimizer):
         self.init_state = init_state
         self.temp = temp
         self.schedule_constant = schedule_constant
+        self.uuid = uuid.uuid4().hex
+        self.trialsFile = 'trials-'+self.uuid+'.pickle'
 
     def getRuntime(self):
         pass
 
     def runOptimizer(self):
         algorithm = Algorithm(self.init_state, self.temp, self.schedule_constant, self.budget, self.app,
-                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes)
+                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes, self.trialsFile)
         best_parameters, value = algorithm.run()
         print(value, best_parameters)
-        trials = pickleRead('trials.pickle')
+        trials = pickleRead(self.trialsFile)
         return trials

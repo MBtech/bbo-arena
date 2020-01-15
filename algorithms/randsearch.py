@@ -4,17 +4,20 @@ import json
 import sys
 from optimizer import optimizer
 from utils import *
+import uuid
 
 class randSearch(optimizer):
-    # def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
-    #     self.app = app
-    #     self.system = system
-    #     self.datasize = datasize
-    #     self.budget = budget
-    #     self.parent_dir = parent_dir
-    #     self.types = types
-    #     self.sizes = sizes
-    #     self.number_of_nodes = number_of_nodes
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
+        self.app = app
+        self.system = system
+        self.datasize = datasize
+        self.budget = budget
+        self.parent_dir = parent_dir
+        self.types = types
+        self.sizes = sizes
+        self.number_of_nodes = number_of_nodes
+        self.uuid = uuid.uuid4().hex
+        self.trialsFile = 'trials-'+self.uuid+'.pickle'
 
     def getRuntime(self, x1, x2, x3):
         type, size, num = [x1, x2, x3]
@@ -26,7 +29,7 @@ class randSearch(optimizer):
         else:
             runtime = 3600.0
         t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
-        updatePickle(t)
+        updatePickle(t, filename=self.trialsFile)
         return runtime
 
     def runOptimizer(self):
@@ -49,5 +52,5 @@ class randSearch(optimizer):
                 value = val
                 best_parameters = parameters
         print(value, best_parameters)
-        trials = pickleRead('trials.pickle')
+        trials = pickleRead(self.trialsFile)
         return trials

@@ -5,6 +5,7 @@ import sys
 from pyDOE import *
 from optimizer import optimizer
 from utils import *
+import uuid
 
 class lhsSearch(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
@@ -16,6 +17,8 @@ class lhsSearch(optimizer):
         self.types = types
         self.sizes = sizes
         self.number_of_nodes = number_of_nodes
+        self.uuid = uuid.uuid4().hex
+        self.trialsFile = 'trials-'+self.uuid+'.pickle'
 
     def convertToConfig(self, x):
         type = self.types[int(round(x[0] * len(self.types)-1))]
@@ -34,7 +37,7 @@ class lhsSearch(optimizer):
         else:
             runtime = 3600.0
         t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
-        updatePickle(t)
+        updatePickle(t, filename=self.trialsFile)
         return runtime
 
     def runOptimizer(self):
@@ -57,7 +60,7 @@ class lhsSearch(optimizer):
             if count == self.budget:
                 break
 
-        trials = pickleRead('trials.pickle')
+        trials = pickleRead(self.trialsFile)
         print(value, best_parameters)
 
         return trials
