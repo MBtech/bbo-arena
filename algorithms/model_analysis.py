@@ -39,4 +39,10 @@ for system in config["systems"]:
                                 data.append([ e1, e2, algo+'_'+estimator+'_'+acq_method])
 
             df = pd.DataFrame(data, columns=['mse', 'rmse', 'algorithm'])
-            df.to_csv('error/'+'error_'+system + '_' + app + '_' + datasize+'.csv', index=False)
+            
+            errorFilename = 'error/'+'error_'+system + '_' + app + '_' + datasize+'.csv'
+            if os.path.isfile(errorFilename):
+                df_read = pd.read_csv(errorFilename, index_col=False)
+                df = df.append(df_read)
+
+            df.to_csv(errorFilename, index=False)

@@ -95,10 +95,14 @@ class models():
                 acq_func=self.acquisition_method,
                 #acq_optimizer_kwargs={'n_points': 100}
                 )
+            conf = list()
+            runtimes = list()
             for trial in trials:
                 x = [ trial['params']['type'], trial['params']['size'], trial['params']['num'] ]
-                conf = self.convertToDom(x)
-                opt.base_estimator_.fit(opt.space.transform([conf]), [trial['runtime']])
+                conf.append(self.convertToDom(x))
+                runtimes.append(trial['runtime'])
+                # opt.base_estimator_.fit(opt.space.transform([conf]), [trial['runtime']])
+            opt.base_estimator_.fit(opt.space.transform(conf), runtimes)
             
             yTrue = list()
             yPred = list()
