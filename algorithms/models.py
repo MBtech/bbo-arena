@@ -7,7 +7,7 @@ import sys
 from skopt import gp_minimize, gbrt_minimize, forest_minimize, Optimizer
 from skopt.space import Real, Integer, Categorical
 from utils import *
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, median_absolute_error
 
 def getResult(filename, dir='logs/'):
     data =dict()
@@ -89,6 +89,8 @@ class models():
 
         # print(X, Y)
         mse = list()
+        ae = list()
+        mae = list()
         for trials in data['experiments']:
             opt = Optimizer(self.domain, base_estimator=self.optimizer,
                 n_random_starts=self.initial_samples, acq_optimizer="sampling",
@@ -112,6 +114,8 @@ class models():
                 yTrue.append(y)
                 yPred.append(pred[0][0])
             mse.append(mean_squared_error(yTrue, yPred))
+            ae.append(mean_absolute_error(yTrue, yPred))
+            mae.append(median_absolute_error(yTrue, yPred))
             # print(mse)
         rmse = np.sqrt(mse)
-        return {'mse': mse, 'rmse': rmse}
+        return {'ae': ae, 'mae': mae, 'mse': mse, 'rmse': rmse}

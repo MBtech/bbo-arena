@@ -33,12 +33,14 @@ for system in config["systems"]:
                             m = models(new_filename, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, optimizer=estimator, initial_samples=6, acquisition_method=acq_method)
                             # print(new_filename)
                             d = m.buildModel()
+                            ae = d['ae']
+                            mae = d['mae']
                             mse = d['mse']
                             rmse = d['rmse']
-                            for e1, e2 in zip(mse, rmse):
-                                data.append([ e1, e2, algo+'_'+estimator+'_'+acq_method])
+                            for e1, e2, e3, e4 in zip(ae, mae, mse, rmse):
+                                data.append([ e1, e2, e3, e4, algo+'_'+estimator+'_'+acq_method])
 
-            df = pd.DataFrame(data, columns=['mse', 'rmse', 'algorithm'])
+            df = pd.DataFrame(data, columns=['ae', 'mae', 'mse', 'rmse', 'algorithm'])
             
             errorFilename = 'error/'+'error_'+system + '_' + app + '_' + datasize+'.csv'
             if os.path.isfile(errorFilename):
