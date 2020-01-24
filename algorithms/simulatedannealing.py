@@ -25,8 +25,8 @@ def closest(lst, K):
 ## Neighbors aren't selected based on step increase in resources
 class Algorithm(SimulatedAnnealing):
     def __init__(self, initial_state, temp, schedule_constant, max_steps, app, system, datasize,
-                    parent_dir, number_of_nodes,types, sizes, trialsFile):
-        super().__init__(initial_state, temp, schedule_constant, max_steps)
+                    parent_dir, number_of_nodes,types, sizes, trialsFile, initial_samples):
+        super().__init__(initial_state, temp, schedule_constant, max_steps, n_samples=initial_samples)
         self.app = app
         self.system = system
         self.datasize=datasize
@@ -93,6 +93,12 @@ class Algorithm(SimulatedAnnealing):
         state["num"]= int(np.random.choice(self.number_of_nodes[state["size"]]))
         return state
 
+    def _random(self):
+        state = self.randomPoint()
+        while state in self.trials:
+            state = self.randomPoint()
+        return state
+
     def _neighbor(self):
         neighbors = self.neighborhood(self.current_state)
         neighbors = [neighbor for neighbor in neighbors if neighbor not in self.trials ]
@@ -120,7 +126,7 @@ class Algorithm(SimulatedAnnealing):
 
 class saOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, temp = 100, schedule_constant=0.7,
+                            number_of_nodes, temp = 100, schedule_constant=0.7, initial_samples=3,
                             init_state={"type": "m4", "size": "large" ,"num": 4}):
         super(saOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
         self.init_state = init_state
@@ -128,13 +134,14 @@ class saOpt(optimizer):
         self.schedule_constant = schedule_constant
         self.uuid = uuid.uuid4().hex
         self.trialsFile = 'trials-'+self.uuid+'.pickle'
+        self.initial_samples = initial_samples
 
     def getRuntime(self):
         pass
 
     def runOptimizer(self):
         algorithm = Algorithm(self.init_state, self.temp, self.schedule_constant, self.budget, self.app,
-                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes, self.trialsFile)
+                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes, self.trialsFile, self.initial_samples)
         best_parameters, value = algorithm.run()
         print(value, best_parameters)
         trials = pickleRead(self.trialsFile)

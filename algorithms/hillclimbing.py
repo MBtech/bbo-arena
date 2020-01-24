@@ -25,8 +25,8 @@ def closest(lst, K):
 ## Neighbors aren't selected based on step increase in resources
 class Algorithm(StochasticHillClimb):
     def __init__(self, initial_state, temp, max_steps, app, system, datasize,
-                    parent_dir, number_of_nodes,types, sizes, trialsFile):
-        super().__init__(initial_state, temp, max_steps)
+                    parent_dir, number_of_nodes,types, sizes, trialsFile, initial_samples):
+        super().__init__(initial_state, temp, max_steps, n_samples=initial_samples)
         self.app = app
         self.system = system
         self.datasize=datasize
@@ -92,6 +92,12 @@ class Algorithm(StochasticHillClimb):
         state["size"]= np.random.choice(self.sizes)
         state["num"]= int(np.random.choice(self.number_of_nodes[state["size"]]))
         return state
+        
+    def _random(self):
+        state = self.randomPoint()
+        while state in self.trials:
+            state = self.randomPoint()
+        return state
 
     def _neighbor(self):
         neighbors = self.neighborhood(self.current_state)
@@ -120,20 +126,21 @@ class Algorithm(StochasticHillClimb):
 
 class hcOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, temp = 100,
+                            number_of_nodes, temp = 100, initial_samples=3,
                             init_state={"type": "m4", "size": "large" ,"num": 4}):
         super(hcOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
         self.init_state = init_state
         self.temp = temp
         self.uuid = uuid.uuid4().hex
         self.trialsFile = 'trials-'+self.uuid+'.pickle'
+        self.initial_samples = initial_samples
 
     def getRuntime(self):
         pass
 
     def runOptimizer(self):
         algorithm = Algorithm(self.init_state, self.temp, self.budget, self.app,
-                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes, self.trialsFile)
+                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes, self.trialsFile, self.initial_samples)
         best_parameters, value = algorithm.run()
         trials = pickleRead(self.trialsFile)
         print(-value, best_parameters)

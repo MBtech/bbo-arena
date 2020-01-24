@@ -54,23 +54,28 @@ for system in config["systems"]:
                     elif algo == "smac":
                         search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
                     elif algo == "tpe":
-                        search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+                        search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, initial_samples=config["initial_samples"])
 
                     elif algo == "bo":
                         for estimator in config["bo_estimators"]:
                             for acq_method in config["bo_acq"][estimator]:
                                 new_filename = filename + '_' + estimator + '_' + acq_method
-                                search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, optimizer=estimator, initial_samples=6, acquisition_method=acq_method)
-                                getResult(search, new_filename)
-                    elif algo == "hc":
-                        # Send in budget -1 because the initial state evaluation isn't included in the budget
-                        search = hcOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
-                    elif algo == "sa":
-                        search = saOpt(app, system, datasize, budget-1, parent_dir, types, sizes, number_of_nodes)
+                                print(new_filename)
+                                search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, optimizer=estimator, 
+                                                    initial_samples=config["initial_samples"], acquisition_method=acq_method)
+                                getResult(search, new_filename, log=config['log'])
+
+                    elif "hc" in algo:
+                        search = hcOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, initial_samples=config["initial_samples"])
+                    elif "sa" in algo:
+                        search = saOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, initial_samples=config["initial_samples"])
+                
+                    else:
+                        print("Algorithm not found")
 
 
                     if algo != "bo":
-                        getResult(search, filename)
+                        getResult(search, filename, log=config['log'])
 
 
 
