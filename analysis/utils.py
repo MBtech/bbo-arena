@@ -22,7 +22,7 @@ def getAll(app, system, datasize):
                 else:
                     runtime = 3600.0
                 runtimes.append([runtime, num, t, size])
-                print(str(num) + '_'+ t+'.'+size, runtime)
+                # print(str(num) + '_'+ t+'.'+size, runtime)
     return runtimes
     
 def getBest(app, system, datasize):
@@ -47,7 +47,7 @@ def getBest(app, system, datasize):
                 else:
                     runtime = 3600.0
                 runtimes.append(runtime)
-                print(str(num) + '_'+ t+'.'+size, runtime)
+                # print(str(num) + '_'+ t+'.'+size, runtime)
     return min(runtimes)
     
 def parseLogs(system, app, datasize, configJsonName = 'test_configs/all_runs.json'):

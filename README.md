@@ -38,7 +38,7 @@ If you are on mac make sure that you have xcode tools installed using
 
 `apt-get install swig` or `brew install swig@3` if you are on mac. Make sure you have swig 3 and not version 4.
 
-`pip install cython smac[all] cma gpyopt hyperopt solidpy pysmac bbopt pydoe scikit-optimize`
+`pip install cython smac[all] cma gpyopt hyperopt solidpy pysmac bbopt pydoe scikit-optimize statsmodels`
 
 ## Notes:
 Single solution based [metaheuristics methods](https://en.wikipedia.org/wiki/Metaheuristic) are more appropriate for cloud configuration problem
@@ -56,3 +56,6 @@ Algorithms such as genetic algorithms and evolutionary algorithms are use multip
 ## Tutorials:
 - [On using hyperopt: Advanced Machine Learning](https://blog.goodaudience.com/on-using-hyperopt-advanced-machine-learning-a2dde2ccece7)
 - [Hyperparameter Optimization in Python](https://towardsdatascience.com/hyperparameter-optimization-in-python-part-0-introduction-c4b66791614b)
+
+## Other readings: 
+- [What does RMSE really mean?](https://towardsdatascience.com/what-does-rmse-really-mean-806b65f2e48e)
