@@ -50,7 +50,7 @@ def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes,
     elif algo == "tpe":
         search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, initial_samples=config["initial_samples"])
 
-    elif algo == "bo":
+    elif "bo" in algo:
         Parallel(n_jobs=nJobs)(delayed(callBO)(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config, estimator, acq_method, filename )
                     for estimator in config["bo_estimators"] for acq_method in config["bo_acq"][estimator])
 
@@ -64,7 +64,7 @@ def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes,
         print("Algorithm not found")
 
 
-    if algo != "bo":
+    if "bo" not in algo:
         getResults(search, filename, config)
 
 
