@@ -64,7 +64,7 @@ def parseLogs(system, app, datasize, configJsonName = 'test_configs/all_runs.jso
         algoName = algo
         filename = system + '_' + app + '_' + datasize + '_' + algo
         # Since there are multiple version of BO we have separated it
-        if algo == "bo":
+        if "bo" in algo:
             for estimator in config["bo_estimators"]:
                 for acq_method in config["bo_acq"][estimator]:
                     for i in range(0, optRuns):

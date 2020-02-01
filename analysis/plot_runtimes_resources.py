@@ -2,6 +2,7 @@ import seaborn as sns
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 from utils import getAll
 import sys
@@ -45,21 +46,40 @@ for system in config["systems"]:
             
             df['CPUs'] = df.apply(total_cpu, axis=1)
             df['Memory'] = df.apply(total_memory, axis=1)
-
+            df['Family'] = df['Type'] +'.'+ df['Size']
             print(df.to_string)
+        
 
-            ax = fig.gca(projection='3d')
+            # ax = fig.gca(projection='3d')
+
             # surf=ax.plot_trisurf(df['CPUs'], df['Memory'], df['Runtime'], linewidth=0.2)
-            surf=ax.scatter(df['CPUs'], df['Memory'], df['Runtime'], c=df['Runtime'], s=60, cmap='cividis')
-            ax.set_xlabel('CPUs')
-            ax.set_ylabel('Memory (GB)')
-            ax.set_zlabel('Runtime (s)')
+
+            # surf=ax.scatter(df['CPUs'], df['Memory'], df['Runtime'], c=df['Runtime'], s=60, cmap='cividis')
+
+            # ax.set_zlabel('Runtime (s)')
+            
+            # ax = plt.scatter(x=df["CPUs"], y=df["Memory"],c=df["Runtime"]/df["Runtime"].min(), s=20, cmap="Spectral") 
+            filled_markers = ('o', 'v', '^', '<', '>', '8', 's', 'p', '*', 'h', 'H', 'D', 'd', 'P', 'X')
+            ax = sns.scatterplot(x="Family", y="Num", hue=df["Runtime"]/df["Runtime"].min(), markers=filled_markers, 
+                                     data=df)
+
+            # cbar = plt.colorbar(ax)
+            # cbar.set_label('Normalized Runtime', rotation=270 ,labelpad=15)
+
+            plt.xlabel('Family')
+            plt.ylabel('Num of nodes')
+            idmin = df["Runtime"].idxmin()
+            
+            plt.plot([df.iloc[idmin]["Family"]], [df.iloc[idmin]["Num"]], 'X', markersize=10,color="black") 
+            # sns.jointplot(x="CPUs", y="Memory", size="Runtime", data=df, kind='scatter')
+
             # fig.colorbar( surf, shrink=0.5, aspect=5)
-            plt.show()
+            # plt.show()
 
 
-            # plt.title(title)
-            # plt.legend(loc='upper right', ncol=2, prop={'size': 9})
-            # plt.savefig('plots/data/'+ title + '.pdf', bbox_inches = "tight")
+            plt.title(title)
+            plt.legend(loc='upper right', ncol=1, prop={'size': 7})
+            plt.xticks(rotation=45)
+            plt.savefig('plots/resources/'+ title + '.pdf', bbox_inches = "tight")
 
             # plt.show()
