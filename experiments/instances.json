@@ -1,0 +1,18 @@
+{
+    "EbsOptimized": false, 
+    "BlockDeviceMappings": 
+    [
+        {
+            "DeviceName": "/dev/sda1", 
+            "Ebs": {
+                "DeleteOnTermination": true, 
+                "VolumeType": "gp2", 
+                "VolumeSize": 50
+            }
+        }
+    ], 
+    "KeyName": "bilal-us-east", 
+    "InstanceType": "m5.large", 
+    "SecurityGroupIds": ["sg-3ebcf655"], 
+    "ImageId": "ami-08cec7c429219e339"
+}
