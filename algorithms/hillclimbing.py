@@ -7,16 +7,12 @@ from optimizer import optimizer
 from utils import *
 import uuid
 
-def get_runtime(parent_dir, app, system, datasize, type, size, num):
+def get_objective_value(parent_dir, app, system, datasize, type, size, num, objective_function):
     # print(type, size, num)
     dir = parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ app + "_" +system + "_" + datasize + "_1/"
     jsonName= dir + 'report.json'
-    report = json.load(open(jsonName, 'r'))
-    if report["completed"]:
-        runtime = float(report["elapsed_time"])
-    else:
-        runtime = 3600.0
-    return runtime
+    objective_value = objective_function(jsonName, type, size, num)
+    return objective_value
 
 def closest(lst, K):
 
@@ -25,7 +21,7 @@ def closest(lst, K):
 ## Neighbors aren't selected based on step increase in resources
 class Algorithm(StochasticHillClimb):
     def __init__(self, initial_state, temp, max_steps, app, system, datasize,
-                    parent_dir, number_of_nodes,types, sizes, trialsFile, initial_samples):
+                    parent_dir, number_of_nodes,types, sizes, trialsFile, initial_samples, objective_function):
         super().__init__(initial_state, temp, max_steps, n_samples=initial_samples)
         self.app = app
         self.system = system
@@ -37,6 +33,7 @@ class Algorithm(StochasticHillClimb):
         self.trials = list()
         self.results = list()
         self.trialsFile = trialsFile
+        self.objective_function = objective_function
 
 
     def neighborhood(self, state, step=1):
@@ -116,31 +113,33 @@ class Algorithm(StochasticHillClimb):
         else:
             # print(state)
             type, size, num  = state["type"], state["size"], state["num"]
-            runtime = get_runtime(self.parent_dir, self.app, self.system, self.datasize,
-                    type, size, num)
+            objective_value = get_objective_value(self.parent_dir, self.app, self.system, self.datasize,
+                    state["type"], state["size"], state["num"], self.objective_function)
+            # print("Total Executions: " + str(self.count))
             self.trials.append(state)
-            self.results.append(-(runtime))
-            t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
+            self.results.append(-objective_value)
+            t = {'params': {'type': type,'size': size,'num': num}, 'runtime': objective_value}
             updatePickle(t, filename=self.trialsFile)
-            return -(runtime)
+            return -(objective_value)
 
 class hcOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, temp = 100, initial_samples=3,
+                            number_of_nodes, objective_function, temp = 100, initial_samples=3,
                             init_state={"type": "m4", "size": "large" ,"num": 4}):
-        super(hcOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        super(hcOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
         self.init_state = init_state
         self.temp = temp
         self.uuid = uuid.uuid4().hex
         self.trialsFile = 'trials-'+self.uuid+'.pickle'
         self.initial_samples = initial_samples
 
-    def getRuntime(self):
+    def getObjectiveValue(self):
         pass
 
     def runOptimizer(self):
         algorithm = Algorithm(self.init_state, self.temp, self.budget, self.app,
-                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes, self.trialsFile, self.initial_samples)
+                    self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, 
+                    self.sizes, self.trialsFile, self.initial_samples, self.objective_function)
         best_parameters, value = algorithm.run()
         trials = pickleRead(self.trialsFile)
         print(-value, best_parameters)

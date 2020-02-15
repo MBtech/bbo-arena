@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 class optimizer(ABC):
-    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function):
         self.app = app
         self.system = system
         self.datasize = datasize
@@ -12,12 +12,13 @@ class optimizer(ABC):
         self.number_of_nodes = number_of_nodes
         self.trials = list()
         self.results = list()
+        self.objective_function = objective_function
 
     def convertToConfig(self, x):
         pass
 
     @abstractmethod
-    def getRuntime(self, x1, x2, x3):
+    def getObjectiveValue(self, x1, x2, x3):
         pass
 
     @abstractmethod

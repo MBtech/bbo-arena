@@ -3,7 +3,6 @@ from lhssearch import *
 from randsearch import *
 from smac import *
 from tpe import *
-from bogpyopt import *
 from boskopt import boSkOpt
 from hillclimbing import hcOpt
 from simulatedannealing import saOpt
@@ -13,7 +12,8 @@ import time
 from joblib import Parallel, delayed
 
 
-def getResults(search, filename, config, dir='logs/'):
+def getResults(search, filename, config, dir='test_logs/'):
+    os.makedirs(dir, exist_ok=True)
     log = config['log']
     for i in range(0, config["num_of_runs"]):
         results = search.runOptimizer()
@@ -29,10 +29,10 @@ def getResults(search, filename, config, dir='logs/'):
         if log:
             json.dump(data, open(dir+filename, 'w'), indent=4)
 
-def callBO(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config, estimator, acq_method, filename):
+def callBO(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config, estimator, acq_method, filename, objective_function):
     new_filename = filename + '_' + estimator + '_' + acq_method
     print(new_filename)
-    search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, optimizer=estimator, 
+    search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, optimizer=estimator, 
                         initial_samples=config["initial_samples"], acquisition_method=acq_method)
     getResults(search, new_filename, config)
 
@@ -40,25 +40,26 @@ def callBO(system, app, datasize, algo, budget, parent_dir, types, sizes, number
 def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config):
     filename = system + '_' + app + '_' + datasize + '_' + algo
     if algo == "lhs":
-        search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
     elif algo == "random":
-        search = randSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        search = randSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
     elif algo == "random2x":
-        search = randSearch(app, system, datasize, 2*budget, parent_dir, types, sizes, number_of_nodes)
+        search = randSearch(app, system, datasize, 2*budget, parent_dir, types, sizes, number_of_nodes, objective_function)
     elif algo == "smac":
-        search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
-    elif algo == "tpe":
-        search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, initial_samples=config["initial_samples"])
+        search = smac(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
+    elif "tpe" in algo:
+        search = tpeOptimizer(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, initial_samples=config["initial_samples"])
 
     elif "bo" in algo:
-        Parallel(n_jobs=nJobs)(delayed(callBO)(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config, estimator, acq_method, filename )
+        Parallel(n_jobs=nJobs)(delayed(callBO)(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config, estimator, acq_method, filename, objective_function)
                     for estimator in config["bo_estimators"] for acq_method in config["bo_acq"][estimator])
 
 
     elif "hc" in algo:
-        search = hcOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, initial_samples=config["initial_samples"])
+        search = hcOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, initial_samples=config["initial_samples"])
     elif "sa" in algo:
-        search = saOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, initial_samples=config["initial_samples"])
+        search = saOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, \
+                    initial_samples=config["initial_samples"], temp=config["sa"]["temp"], schedule_constant=config["sa"]["schedule_constant"])
 
     else:
         print("Algorithm not found")
@@ -79,18 +80,24 @@ parent_dir = '../scout/dataset/osr_multiple_nodes/'
 
 # python plot_all_runtimes.py pagerank spark
 config = json.load(open(sys.argv[1], 'r'))
+objective = sys.argv[2]
+
+objective_function = getExecutionTime
+if objective == "cost":
+    objective_function = getExecutionCost
 
 budget = config["budget"]
 nJobs = 4
 
-for system in config["systems"]:
-    for app in config["applications"][system]:
-        for datasize in config["datasizes"]:
-            for algo in config["bbo_algos"]:
-                callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config) 
+# for system in config["systems"]:
+#     for app in config["applications"][system]:
+#         for datasize in config["datasizes"]:
+#             for algo in config["bbo_algos"]:
+#                 callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config) 
                                                 
 
-
+Parallel(n_jobs=2)(delayed(callOptimizer)(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config) 
+                for system in config["systems"] for app in config["applications"][system] for datasize in config["datasizes"] for algo in config["bbo_algos"] )
 
 
 # search = boGPyOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)

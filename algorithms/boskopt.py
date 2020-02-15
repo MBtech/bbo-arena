@@ -10,9 +10,9 @@ import uuid
 
 class boSkOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, optimizer='GP', acquisition_method='EI',
+                            number_of_nodes, objective_function, optimizer='GP', acquisition_method='EI',
                                                 initial_samples=3, seed=1):
-        super(boSkOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        super(boSkOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
         self.domain = [
                 Categorical(self.types),
                 Integer(0, len(self.sizes)-1),
@@ -24,6 +24,7 @@ class boSkOpt(optimizer):
         self.acquisition_method = acquisition_method
         self.uuid = uuid.uuid4().hex
         self.trialsFile = 'trials-'+self.uuid+'.pickle'
+        
 
     def convertToConfig(self, x):
         # x = bounds(x)
@@ -33,19 +34,15 @@ class boSkOpt(optimizer):
         num = self.number_of_nodes[size][index]
         return type, size, num
 
-    def getRuntime(self, x):
+    def getObjectiveValue(self, x):
         # print(x)
         type, size, num = self.convertToConfig(x)
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
-        report = json.load(open(jsonName, 'r'))
-        if report["completed"]:
-            runtime = float(report["elapsed_time"])
-        else:
-            runtime = 3600.0
-        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
+        objective_value = self.objective_function(jsonName, type, size, num)
+        t = {'params': {'type': type,'size': size,'num': num}, 'value': objective_value}
         updatePickle(t, filename=self.trialsFile)
-        return runtime
+        return objective_value
 
 
     def runOptimizer(self):
@@ -60,7 +57,7 @@ class boSkOpt(optimizer):
         #             n_random_starts=self.initial_samples)
         opt = Optimizer(self.domain, base_estimator=self.optimizer,
                 n_random_starts=self.initial_samples, acq_optimizer="sampling",
-                acq_func=self.acquisition_method,
+                acq_func=self.acquisition_method
                 #acq_optimizer_kwargs={'n_points': 100}
                 )
         count = 0
@@ -71,7 +68,7 @@ class boSkOpt(optimizer):
         while count < self.budget:
             next_x = opt.ask()
             if next_x not in trails:
-                f_val = self.getRuntime(next_x)
+                f_val = self.getObjectiveValue(next_x)
                 count +=1
                 if f_val < min_val:
                     min_val = f_val

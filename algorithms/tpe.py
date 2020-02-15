@@ -9,9 +9,9 @@ from utils import *
 import uuid
 
 class tpeOptimizer(optimizer):
-    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes,
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function,
                                                 initial_samples=3, seed=1):
-        super(tpeOptimizer, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        super(tpeOptimizer, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
         self.family = hp.choice('type', self.types)
         self.classes = [
             {
@@ -36,31 +36,28 @@ class tpeOptimizer(optimizer):
         self.uuid = uuid.uuid4().hex
         self.trialsFile = 'trials-'+self.uuid+'.pickle'
 
-    def getRuntime(self, args):
+    def getObjectiveValue(self, args):
         size = args['size']
         type = args['type']
         num = self.number_of_nodes[size][int(args['num'])]
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" +self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
-        report = json.load(open(jsonName, 'r'))
-        if report["completed"]:
-            runtime = float(report["elapsed_time"])
-        else:
-            runtime = 3600.0
-        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': runtime}
+        objective_value = self.objective_function(jsonName, type, size, num)
+        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': objective_value}
         updatePickle(t, filename=self.trialsFile)
-        if runtime < 0:
-            # ret = {'loss': 3600, 'status': STATUS_OK}
-            ret = {'loss': runtime, 'status': STATUS_FAIL}
-        else:
-            ret = {'loss': runtime, 'status': STATUS_OK}
+        ret = {'loss': objective_value, 'status': STATUS_OK}
+        # if objective_value == 3600.0:
+        #     # ret = {'loss': 3600, 'status': STATUS_OK}
+        #     ret = {'loss': objective_value, 'status': STATUS_FAIL}
+        # else:
+        #     ret = {'loss': objective_value, 'status': STATUS_OK}
         return ret
 
 
     def runOptimizer(self):
         algo = partial(tpe.suggest, n_startup_jobs=self.initial_samples)
 
-        best_parameters = fmin(self.getRuntime,
+        best_parameters = fmin(self.getObjectiveValue,
             space=self.parameter_space,
             algo=algo,
             max_evals=self.budget,
@@ -71,7 +68,7 @@ class tpeOptimizer(optimizer):
             )
 
         param = space_eval(self.parameter_space, best_parameters)
-        value = self.getRuntime(param)
+        value = self.getObjectiveValue(param)
         trials = pickleRead(self.trialsFile)
         print(value['loss'], param)
         return trials

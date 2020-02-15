@@ -8,7 +8,7 @@ from optimizer import optimizer
 from utils import *
 
 class smac(optimizer):
-    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes):
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function):
         parameter_space= {'x1':('categorical', types, np.random.choice(types)),
                         'x2':('integer', [0, len(sizes)-1], int(np.random.choice(range(0, len(sizes))))),
                         'x3':('integer', [0, 9], int(np.random.choice(range(0, 10))))
@@ -19,7 +19,7 @@ class smac(optimizer):
                         ]
         self.parameter_space = parameter_space
         self.count = 0
-        super(smac, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes)
+        super(smac, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
 
     def convertToConfig(self, x):
         type = x[0]
@@ -28,16 +28,16 @@ class smac(optimizer):
         num = self.number_of_nodes[size][index]
         return type, size, num
 
-    def getRuntime(self, x1, x2, x3):
+    def getObjectiveValue(self, x1, x2, x3):
         x = [x1, x2, x3]
         type, size, num = self.convertToConfig(x)
         # print(type, size, num)
         dir = self.parent_dir + str(num) + '_'+ type+'.'+size+ '_'+ self.app + "_" + self.system + "_" + self.datasize + "_1/"
         jsonName= dir + 'report.json'
-        report = json.load(open(jsonName, 'r'))
-        t = {'params': {'type': type,'size': size,'num': num}, 'runtime': float(report["elapsed_time"])}
+        objective_value = self.objective_function(jsonName, type, size, num)
+        t = {'params': {'type': type,'size': size,'num': num}, 'value': objective_value}
         updatePickle(t)
-        return float(report["elapsed_time"])
+        return objective_value
 
     def runOptimizer(self):
         # x, cost, _ = fmin_smac(func=get_runtime,
@@ -49,7 +49,7 @@ class smac(optimizer):
             os.mkdir(os.getcwd()+"/temp")
         opt = pysmac.SMAC_optimizer(working_directory =os.getcwd()+"/temp")
         value, parameters = opt.minimize(
-                            self.getRuntime,
+                            self.getObjectiveValue,
                             self.budget,
                             self.parameter_space,
                             forbidden_clauses=self.forbidden_confgs)
