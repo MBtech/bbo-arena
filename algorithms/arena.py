@@ -55,7 +55,7 @@ def callBO(system, app, datasize, algo, budget, parent_dir, types, sizes, number
                                                 acq_func_kwargs):
     new_filename = filename + '_' + estimator + '_' + acq_method
     print(new_filename)
-    for i in range(0, config["num_of_runs"]-get_existing_experiments(new_filename)):
+    for i in range(get_existing_experiments(new_filename), config["num_of_runs"]):
         points_to_evaluate = generate_init_samples(types, sizes, number_of_nodes, config["initial_samples"], seeds[i])
         search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, 
                             points_to_evaluate=points_to_evaluate ,optimizer=estimator, 
@@ -76,7 +76,7 @@ def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes,
                     for estimator in config["bo_estimators"] for acq_method in config["bo_acq"][estimator])
         return
 
-    for i in range(0, config["num_of_runs"]-get_existing_experiments(filename)):
+    for i in range(get_existing_experiments(filename), config["num_of_runs"]):
         points_to_evaluate = generate_init_samples(types, sizes, number_of_nodes, config["initial_samples"], seeds[i])
         if algo == "lhs":
             search = lhsSearch(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
