@@ -10,9 +10,9 @@ import uuid
 
 class boSkOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, objective_function, optimizer='GP', acquisition_method='EI',
-                                                initial_samples=3, seed=1):
-        super(boSkOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
+                            number_of_nodes, objective_function, points_to_evaluate=[], optimizer='GP', acquisition_method='EI',
+                                                initial_samples=3, seed=1, acq_kwargs={}):
+        super(boSkOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, points_to_evaluate)
         self.domain = [
                 Categorical(self.types),
                 Integer(0, len(self.sizes)-1),
@@ -24,6 +24,7 @@ class boSkOpt(optimizer):
         self.acquisition_method = acquisition_method
         self.uuid = uuid.uuid4().hex
         self.trialsFile = 'trials-'+self.uuid+'.pickle'
+        self.acq_kwargs = acq_kwargs
         
 
     def convertToConfig(self, x):
@@ -44,6 +45,15 @@ class boSkOpt(optimizer):
         updatePickle(t, filename=self.trialsFile)
         return objective_value
 
+    def convert_points(self, points_to_evaluate):
+        pte = list()
+        for point in points_to_evaluate:
+            p = list()
+            p.append(point["type"])
+            p.append(self.sizes.index(point["size"]))
+            p.append(self.number_of_nodes[point["size"]].index(point["num"]))
+            pte.append(p)
+        return pte
 
     def runOptimizer(self):
         # if self.optimizer=='gp':
@@ -57,7 +67,7 @@ class boSkOpt(optimizer):
         #             n_random_starts=self.initial_samples)
         opt = Optimizer(self.domain, base_estimator=self.optimizer,
                 n_random_starts=self.initial_samples, acq_optimizer="sampling",
-                acq_func=self.acquisition_method
+                acq_func=self.acquisition_method, acq_func_kwargs=self.acq_kwargs
                 #acq_optimizer_kwargs={'n_points': 100}
                 )
         count = 0
@@ -65,6 +75,20 @@ class boSkOpt(optimizer):
         results = list()
         min_x = list()
         min_val = 10000
+        
+        pte = self.convert_points(self.points_to_evaluate)
+        print("Evaluating initial points")
+        for point in pte:
+            f_val = self.getObjectiveValue(point)
+            count +=1 
+            if f_val < min_val:
+                min_val = f_val
+                min_x = point
+            trails.append(point)
+            results.append(f_val)
+            opt.tell(point, f_val)
+
+        print("Doing optimization runs")
         while count < self.budget:
             next_x = opt.ask()
             if next_x not in trails:

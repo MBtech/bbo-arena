@@ -7,7 +7,7 @@ from utils import *
 import uuid
 
 class randSearch(optimizer):
-    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function):
+    def __init__(self, app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, seed=np.random.randint(1, 10000)):
         self.app = app
         self.system = system
         self.datasize = datasize
@@ -19,6 +19,7 @@ class randSearch(optimizer):
         self.uuid = uuid.uuid4().hex
         self.trialsFile = 'trials-'+self.uuid+'.pickle'
         self.objective_function = objective_function
+        self.seed = seed 
 
     def getObjectiveValue(self, x1, x2, x3):
         type, size, num = [x1, x2, x3]
@@ -34,6 +35,7 @@ class randSearch(optimizer):
         best_parameters = {}
         count = 0
         value = 100000
+        np.random.seed(self.seed)
         while count < self.budget:
             parameters = {}
             parameters['type'] = np.random.choice(self.types)

@@ -11,13 +11,12 @@
   "bbo_algos": [
               "lhs",
               "random",
-              "random2x",
               "tpe",
-              "smac",
               "bo",
               "hc",
               "sa"
             ],
+"initial_samples": 3, 
 
 "bo_estimators": ["RF", "ET", "GBRT", "GP"],
 "bo_acq": {
@@ -25,5 +24,22 @@
       "ET": ["LCB", "EI", "PI"],
       "GBRT": ["LCB", "EI", "PI"],
       "GP": ["LCB", "EI", "PI", "gp_hedge"]
-    }
+    },
+
+"hc": {
+  "temp": 50
+},
+"sa": {
+  "temp": 50,
+  "schedule_constant": 0.9
+},
+"bo_args": {
+  "xi": 0.05,
+  "kappa": 1.0
+},
+"tpe_args": {
+  "gamma": 0.25
+},
+"log": false
+
 }

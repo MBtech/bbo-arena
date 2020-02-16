@@ -21,8 +21,8 @@ def closest(lst, K):
 ## Neighbors aren't selected based on step increase in resources
 class Algorithm(SimulatedAnnealing):
     def __init__(self, initial_state, temp, schedule_constant, max_steps, app, system, datasize,
-                    parent_dir, number_of_nodes,types, sizes, trialsFile, initial_samples, objective_function):
-        super().__init__(initial_state, temp, schedule_constant, max_steps, n_samples=initial_samples)
+                    parent_dir, number_of_nodes,types, sizes, trialsFile, initial_samples, objective_function, points_to_evaluate):
+        super().__init__(initial_state, temp, schedule_constant, max_steps, n_samples=initial_samples, points_to_evaluate=points_to_evaluate)
         self.app = app
         self.system = system
         self.datasize=datasize
@@ -123,9 +123,9 @@ class Algorithm(SimulatedAnnealing):
 
 class saOpt(optimizer):
     def __init__(self, app, system, datasize, budget, parent_dir, types, sizes,
-                            number_of_nodes, objective_function, temp = 100, schedule_constant=0.7, initial_samples=3,
+                            number_of_nodes, objective_function, points_to_evaluate=[], temp = 100, schedule_constant=0.7, initial_samples=3,
                             init_state={"type": "m4", "size": "large" ,"num": 4}):
-        super(saOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function)
+        super(saOpt, self).__init__(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, points_to_evaluate)
         self.init_state = init_state
         self.temp = temp
         self.schedule_constant = schedule_constant
@@ -139,7 +139,7 @@ class saOpt(optimizer):
     def runOptimizer(self):
         algorithm = Algorithm(self.init_state, self.temp, self.schedule_constant, self.budget, self.app,
                     self.system, self.datasize, self.parent_dir, self.number_of_nodes, self.types, self.sizes,
-                    self.trialsFile, self.initial_samples, self.objective_function)
+                    self.trialsFile, self.initial_samples, self.objective_function, self.points_to_evaluate)
         best_parameters, value = algorithm.run()
         print(value, best_parameters)
         trials = pickleRead(self.trialsFile)

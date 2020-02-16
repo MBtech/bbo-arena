@@ -1,0 +1,23 @@
+{
+  "systems": ["spark1.5"],
+  "applications": {
+    "spark1.5": [ "regression"]
+  },
+  "num_of_runs": 100,
+  "budget": 30,
+  "datasizes": ["bigdata"],
+  "bbo_algos": [
+              "bo"
+            ],
+"initial_samples": 3, 
+
+"bo_estimators": [ "ET"],
+"bo_acq": {
+      "RF": ["LCB", "EI", "PI"],
+      "ET": ["LCB", "EI", "PI"],
+      "GBRT": ["LCB", "EI", "PI"],
+      "GP": ["LCB", "EI", "PI", "gp_hedge"]
+    },
+
+"log": true
+}

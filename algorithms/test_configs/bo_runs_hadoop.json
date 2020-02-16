@@ -1,0 +1,23 @@
+{
+  "systems": ["hadoop"],
+  "applications": {
+    "hadoop": ["pagerank", "terasort", "wordcount"]
+  },
+  "num_of_runs": 100,
+  "budget": 30,
+  "datasizes": ["huge", "bigdata"],
+  "bbo_algos": [
+              "bo"
+            ],
+"initial_samples": 3, 
+"bo_estimators": ["RF", "ET", "GBRT", "GP"],
+"bo_acq": {
+      "RF": ["LCB", "EI", "PI"],
+      "ET": ["LCB", "EI", "PI"],
+      "GBRT": ["LCB", "EI", "PI"],
+      "GP": ["LCB", "EI", "PI", "gp_hedge"]
+    },
+    
+"log": true
+
+}
