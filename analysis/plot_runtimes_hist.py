@@ -20,14 +20,14 @@ config = json.load(open(configJsonName, 'r'))
 count = 0
 good_confs = list()
 all_runtimes = list()
-
+metric = "cost"
 for system in config["systems"]:
     for app in config["applications"][system]:
         for datasize in config["datasizes"]:
             plt.figure()
             title = system+"_"+app+"_"+datasize
 
-            runtimes = getAll(app, system, datasize)
+            runtimes = getAll(app, system, datasize, metric=metric)
             
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             df_norm = df.copy()
