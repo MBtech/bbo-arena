@@ -17,6 +17,7 @@ if len(sys.argv) > 1:
 else:
     configJsonName = "test_configs/all_runs.json"
 
+print(configJsonName)
 pd.set_option('display.max_rows', None)
 config = json.load(open(configJsonName, 'r'))
 prefix = config["prefix"]
@@ -49,19 +50,22 @@ for system in config["systems"]:
             # plt.figure(figsize=(5,3))
             title = system+"_"+app+"_"+datasize
             print(title)
-            runtimes = parseLogs(system, app, datasize, configJsonName, logDir=log_dir, value_key=value_key)
-            df = pd.DataFrame(runtimes, columns = ['Algorithms', 'Budget', 'Best Runtime', 'Experiment'])
-            df_select = df[df['Budget'].isin(steps)]
-            df_select['Algorithms'] = df_select['Algorithms'].str.upper()
-            # print(df_select)
-
 
             runtimes = getAll(app, system, datasize)
+            if len(runtimes) == 0:
+                continue
+            
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             df["Cost"] = df.apply(lambda x: (prices[x["Type"] + "." + x["Size"]]/3600.0) * x["Num"] * x["Runtime"] , axis=1)
             # df["Cost"] = (prices[df["Type"] + "." + df["Size"]]/3600.0) * df["Num"] * df["Runtime"] 
             min_runtime = df['Runtime'].min()
             min_cost = df["Cost"].min()
+
+            runtimes = parseLogs(system, app, datasize, configJsonName, logDir=log_dir, value_key=value_key)
+            df = pd.DataFrame(runtimes, columns = ['Algorithms', 'Budget', 'Best Runtime', 'Experiment'])
+            df_select = df[df['Budget'].isin(steps)]
+            df_select['Algorithms'] = df_select['Algorithms'].str.upper()
+            # print(df_select)
 
             total_ranks = pd.DataFrame({'Algorithms':[], 'Budget':[], 'Score':[]})
 
@@ -109,7 +113,20 @@ for system in config["systems"]:
                 plt.savefig(dir + title + '_'+ 'Percentile_'+str(p) + '.pdf', bbox_inches = "tight")
                 
                 # print(slowdown_scores)
-               
+            plt.figure(figsize=(4,2.5))      
+            ax = sns.boxplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=workload_slowdown)
+            h, l = ax.get_legend_handles_labels()
+            if config["legends_outside"]:
+                ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=config["legends"])
+            else:
+                ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 9} , handles=h, labels=config["legends"])
+            plt.ylim(bottom=1.0)
+            plt.ylabel("Norm. Best " + config["metric"])
+            dir = 'plots/norm/' + prefix +"/"
+            os.makedirs(dir, exist_ok=True)
+            plt.savefig(dir + title  + '.pdf', bbox_inches = "tight")
+
+
             total_ranks = total_ranks.set_index(['Algorithms', 'Budget', 'Percentile'])
 
             # print(total_ranks)
@@ -147,9 +164,13 @@ for system in config["systems"]:
 
 for p in percentiles:
     plt.figure(figsize=(4,2.5))
-    
-    ax = sns.boxplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=slowdown_scores[slowdown_scores['Percentile']==p], showfliers=False)
+    for budget in steps:
+        test = slowdown_scores[(slowdown_scores['Percentile']==p) & (slowdown_scores['Budget']==budget)].set_index(['Workload', 'Budget'])
+        print(test)
+    slowdown_scores["Budget"] = slowdown_scores["Budget"].astype(int)
+    ax = sns.boxplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=slowdown_scores[slowdown_scores['Percentile']==p], showfliers=False) #
     h, l = ax.get_legend_handles_labels()
+    
     if config["legends_outside"]:
         ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=config["legends"])
     else:
@@ -163,7 +184,8 @@ for p in percentiles:
 
 scores = scores.reset_index()
 for p in percentiles:
-    plt.figure(figsize=(4,2.5))
+    plt.figure(figsize=(4,2))
+    scores["Budget"] = scores["Budget"].astype(int)
     ax = sns.barplot(x='Budget', y='Score', hue='Algorithms', data=scores[scores['Percentile']==p])
     h, l = ax.get_legend_handles_labels()
     if config["legends_outside"]:
@@ -177,7 +199,8 @@ for p in percentiles:
     # plt.show()
 
 overall_score = scores.groupby(['Algorithms', 'Budget'])['Score'].sum().reset_index()
-plt.figure(figsize=(4,2.5))
+overall_score["Budget"] = overall_score["Budget"].astype(int)
+plt.figure(figsize=(4,2))
 ax = sns.barplot(x='Budget', y='Score', hue='Algorithms', data=overall_score)
 h, l = ax.get_legend_handles_labels()
 if config["legends_outside"]:

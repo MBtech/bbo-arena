@@ -19,19 +19,26 @@ count = 0
 good_confs = list()
 all_runtimes = list()
 num_of_nodes = [4, 6, 8, 10, 12]
-metric = "runtime"
+metric = "cost"
+
+dividers = {'large': 8, 'xlarge': 4, '2xlarge': 2, '4xlarge': 1}
 
 for system in config["systems"]:
     for app in config["applications"][system]:
         for datasize in config["datasizes"]:
-            plt.figure()
+            
             title = system+"_"+app+"_"+datasize
             print(title)
 
             runtimes = getAll(app, system, datasize, metric=metric)
-            
+            if len(runtimes) == 0:
+                continue
+
+            plt.figure()
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             
+            df["Num"] = df.apply(lambda x: (x["Num"] / dividers[x["Size"]]), axis=1)
+
             # df = df[df["Num"].isin(num_of_nodes)]
             df["Family"] = df['Type'] + '.'+df['Size']
             df.drop(['Type', 'Size'], axis=1, inplace=True)
@@ -39,7 +46,10 @@ for system in config["systems"]:
             df_norm['Runtime'] =  df['Runtime']/df['Runtime'].min()
             df_norm['Runtime'] = df_norm['Runtime'].clip(0, 2)
             df_norm = df_norm.pivot("Num", "Family", "Runtime")
-            df_norm = df_norm.reindex(['c4.large', 'c4.xlarge', 'c4.2xlarge', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 'r4.large', 'r4.xlarge', 'r4.2xlarge'], axis=1)
+            # df_norm = df_norm.reindex(['c5.large', 'c5.xlarge', 'c5.2xlarge', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 
+            #                                 'r4.large', 'r4.xlarge', 'r4.2xlarge'], axis=1)
+
+            # df_norm = df_norm.reindex(['c4.large', 'c4.xlarge', 'c4.2xlarge', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 'r4.large', 'r4.xlarge', 'r4.2xlarge'], axis=1)
             print(df_norm)
 
             max_runtime = df['Runtime'].max()
@@ -65,6 +75,7 @@ for system in config["systems"]:
             sns.lineplot(x='Budget', y='Probability', hue='Threshold', data=probabilities, palette=sns.color_palette("Set1", 3))
             plt.ylabel('Pick Probability')
             plt.title(title)
+
             plt.savefig('plots/pick_prob/'+metric+'/' +title+ '.pdf', bbox_inches = "tight")
             # plt.show()
 
@@ -73,7 +84,7 @@ for system in config["systems"]:
                 all_runtimes.append(runtime)
             
             
-            plt.figure()
+            plt.figure(figsize=(5, 3))
             sns.heatmap(df_norm,  cbar_kws={'label': 'Norm. Exec. '+ metric}, linewidths=.5, linecolor="green", \
                         cmap=sns.diverging_palette(250, 15, s=75, l=40, n=9, center="dark"))
             plt.xticks(rotation=45)
@@ -82,6 +93,7 @@ for system in config["systems"]:
             # plt.savefig('plots/data/pdf_'+ title + '.pdf', bbox_inches = "tight")
             # plt.title(title)
             # plt.legend(loc='upper right', ncol=2, prop={'size': 9})
+
             plt.savefig('plots/heatmaps/'+metric+'/' +title+ '.pdf', bbox_inches = "tight")
             # plt.show()
             # sys.exit()
