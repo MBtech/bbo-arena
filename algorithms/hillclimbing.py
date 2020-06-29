@@ -118,7 +118,7 @@ class Algorithm(StochasticHillClimb):
             # print("Total Executions: " + str(self.count))
             self.trials.append(state)
             self.results.append(-objective_value)
-            t = {'params': {'type': type,'size': size,'num': num}, 'runtime': objective_value}
+            t = {'params': {'type': type,'size': size,'num': num}, 'value': objective_value}
             updatePickle(t, filename=self.trialsFile)
             return -(objective_value)
 

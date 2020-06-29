@@ -7,6 +7,7 @@ import sys
 import numpy as np
 import os
 from scipy import stats
+from fanova import fANOVA
 
 steps = [6, 12, 18, 24, 30]
 # steps = [9, 15, 21, 30]
@@ -29,7 +30,7 @@ value_key = config["value_key"]
 # Make sure that the index name is correct for bo case 
 algos = list()
 for algo in config['bbo_algos']:
-    if 'bo1' in algo:
+    if 'bo' in algo:
         for estimator in config["bo_estimators"]:
             for acq_method in config["bo_acq"][estimator]:
             
@@ -44,8 +45,6 @@ scores = pd.DataFrame({ 'Algorithms': np.tile(np.repeat(algos, len(percentiles))
 
 slowdown_scores = pd.DataFrame({ 'Algorithms':[], 'Norm. Best Runtime': [], 'Budget': [], 'Percentile': []})
 
-significance_test = pd.DataFrame({'benchmark': [], 'algorithm':[], 'best algo': [], 'statistic': [],'pvalue' : [], 
-                                        'budget': [], 'test-name': []})  
 for system in config["systems"]:
     for app in config["applications"][system]:
         for datasize in config["datasizes"]:
@@ -99,60 +98,49 @@ for system in config["systems"]:
             
             slowdown_scores = slowdown_scores.append(workload_slowdown, ignore_index=True)
 
-            # for p in percentiles:
-            #     plt.figure(figsize=(4,2.5))
+            for p in percentiles:
+                plt.figure(figsize=(4,2.5))
                 
-            #     ax = sns.barplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=workload_slowdown[workload_slowdown['Percentile']==p])
+                ax = sns.barplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=workload_slowdown[workload_slowdown['Percentile']==p])
                 
-            #     h, l = ax.get_legend_handles_labels()
-            #     # print(l)
-            #     if config["legends_outside"]:
-            #         ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 10}, handles=h, labels=config["legends"])
-            #     else:
-            #         ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 10} , handles=h, labels=config["legends"])
-            #     plt.ylim(bottom=1.0)
-            #     plt.ylabel("Norm. Best " + config["metric"])
-            #     dir = 'plots/norm/' + prefix +"/"
-            #     os.makedirs(dir, exist_ok=True)
+                h, l = ax.get_legend_handles_labels()
+                # print(l)
+                if config["legends_outside"]:
+                    ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 10}, handles=h, labels=config["legends"])
+                else:
+                    ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 10} , handles=h, labels=config["legends"])
+                plt.ylim(bottom=1.0)
+                plt.ylabel("Norm. Best " + config["metric"])
+                dir = 'plots/norm/' + prefix +"/"
+                os.makedirs(dir, exist_ok=True)
 
-            #     plt.savefig(dir + title + '_'+ 'Percentile_'+str(p) + '.pdf', bbox_inches = "tight")
+                plt.savefig(dir + title + '_'+ 'Percentile_'+str(p) + '.pdf', bbox_inches = "tight")
                 # plt.show()
                 # print(slowdown_scores)
             
-        
+            significance_test = pd.DataFrame({ 'algorithm':[], 'statistic': [],'pvalue' : [], 'budget': [], 'test-name': []})
             for budget in steps:
-                for best_algo in algos:
-                    for algo in algos[algos.index(best_algo):]:
+                for algo in algos:
+                    if algo in "BO_3_GBRT_PI":
+                        continue
+                    # print(algo, budget)
+                    # print(df_select)
+                    X = df_select[(df_select["Algorithms"]=="BO_3_GBRT_PI") & (df_select["Budget"]==budget)]['Best Runtime']
+                    Y = df_select[(df_select["Algorithms"]==algo) & (df_select["Budget"]==budget) ]['Best Runtime']
+                    # print(X)
+                    # print(Y)
+                    # print(stats.kruskal(X,Y).pvalue)
+                    # print(stats.wilcoxon(X,Y).pvalue)
+                    # print(stats.ttest_ind(X, Y).pvalue)
 
-                        if algo in best_algo:
-                            continue
-
-                        X = df_select[(df_select["Algorithms"]==best_algo) & (df_select["Budget"]==budget)]['Best Runtime']
-                        Y = df_select[(df_select["Algorithms"]==algo) & (df_select["Budget"]==budget) ]['Best Runtime']
-                        # print(best_algo, algo)
-                        # print(len(X), len(Y))
-                        try:
-                            p_value = stats.wilcoxon(X,Y).pvalue
-                            # print(p_value)
-                            if p_value <= 0.05:
-                                better = best_algo if np.median(X) < np.median(Y) else algo
-
-                                significance_test = significance_test.append({'benchmark': title, 'algorithm': algo, 'best algo': best_algo, 
-                                        'statistic': stats.ranksums(X,Y).statistic, 
-                                        'pvalue': p_value, 'budget': budget, 'test-name': 'wilcoxon', 'better': better}, ignore_index=True)
-                        except:
-                            continue
-                        
-                        p_value = stats.ttest_ind(X,Y).pvalue
-                        # print(p_value)
-                        if p_value <= 0.05:
-                            better = best_algo if np.mean(X) < np.mean(Y) else algo 
-
-                            significance_test = significance_test.append({'benchmark': title, 'algorithm': algo, 'best algo': best_algo, 
-                                    'statistic': stats.ttest_ind(X,Y).statistic, 
-                                    'pvalue': stats.ttest_ind(X,Y).pvalue, 'budget': budget, 'test-name': 't-test', 'better': better}, ignore_index=True)
+                    significance_test = significance_test.append({ 'algorithm': algo, 'statistic': stats.kruskal(X,Y).statistic, 
+                            'pvalue': stats.kruskal(X,Y).pvalue, 'budget': budget, 'test-name': 'kruskal'}, ignore_index=True)
+                    significance_test = significance_test.append({ 'algorithm': algo, 'statistic': stats.wilcoxon(X,Y).statistic, 
+                            'pvalue': stats.wilcoxon(X,Y).pvalue, 'budget': budget, 'test-name': 'wilcoxon'}, ignore_index=True)
+                    significance_test = significance_test.append({ 'algorithm': algo, 'statistic': stats.ttest_ind(X,Y).statistic, 
+                            'pvalue': stats.ttest_ind(X,Y).pvalue, 'budget': budget, 'test-name': 't-test'}, ignore_index=True)
             
-            
+            significance_test.to_csv('plots/norm/'+ prefix +'/'+ title  + '.csv')
             
             plt.figure(figsize=(4,2.5))
             norm_df = df_select.copy()
@@ -173,10 +161,8 @@ for system in config["systems"]:
             dir = 'plots/norm/' + prefix +"/"
             os.makedirs(dir, exist_ok=True)
             plt.savefig(dir + title  + '.pdf', bbox_inches = "tight")
-            plt.close()
             # plt.show()
-           
-            significance_test[significance_test['benchmark']==title].to_csv('plots/norm/'+ prefix +'/'+ title  + '.csv')
+            # sys.exit()
 
             total_ranks = total_ranks.set_index(['Algorithms', 'Budget', 'Percentile'])
 
@@ -211,59 +197,27 @@ for system in config["systems"]:
 
 # print(scores)
 # print(slowdown_scores)
-# sys.exit()
+# # sys.exit()
 
 # for p in percentiles:
-    # plt.figure(figsize=(4,2.5))
-    # for budget in steps:
-    #     test = slowdown_scores[(slowdown_scores['Percentile']==p) & (slowdown_scores['Budget']==budget)].set_index(['Workload', 'Budget'])
-    #     # print(test)
-    # slowdown_scores["Budget"] = slowdown_scores["Budget"].astype(int)
-    # ax = sns.boxplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=slowdown_scores[slowdown_scores['Percentile']==p], showfliers=False) #
-    # h, l = ax.get_legend_handles_labels()
+#     plt.figure(figsize=(4,2.5))
+#     for budget in steps:
+#         test = slowdown_scores[(slowdown_scores['Percentile']==p) & (slowdown_scores['Budget']==budget)].set_index(['Workload', 'Budget'])
+#         # print(test)
+#     slowdown_scores["Budget"] = slowdown_scores["Budget"].astype(int)
+#     ax = sns.boxplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=slowdown_scores[slowdown_scores['Percentile']==p], showfliers=False) #
+#     h, l = ax.get_legend_handles_labels()
     
-    # if config["legends_outside"]:
-    #     ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 11}, handles=h, labels=config["legends"])
-    # else:
-    #     ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 11} , handles=h, labels=config["legends"])
-    # # ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 10} , handles=h, labels=config["legends"])
-    # plt.ylabel("Norm. Best " + config["metric"])
-    # dir = 'plots/percentile/'
-    # os.makedirs(dir, exist_ok=True)
-    # plt.savefig(dir + prefix + '_' + 'Percentile_'+str(p) + '.pdf', bbox_inches = "tight")
-    # plt.show()
-
-plt.figure(figsize=(4,2.5))
-
-slowdown_scores["Budget"] = slowdown_scores["Budget"].astype(int)
-ax = sns.barplot(x='Budget', y='Norm. Best Runtime', hue='Algorithms', data=slowdown_scores, ci=95) 
-h, l = ax.get_legend_handles_labels()
-
-if config["legends_outside"]:
-    ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 11}, handles=h, labels=config["legends"])
-else:
-    ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 11} , handles=h, labels=config["legends"])
-# ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 10} , handles=h, labels=config["legends"])
-plt.ylabel("Norm. Best " + config["metric"])
-dir = 'plots/percentile/' 
-os.makedirs(dir + prefix.split('/')[0] , exist_ok=True)
-plt.savefig(dir + prefix +  '.pdf', bbox_inches = "tight")
-plt.close()
-
-
-significance_test[significance_test['test-name']=='t-test']['better'].value_counts().nlargest(10).sort_values().plot(kind='barv') 
-dir = 'plots/scores/' + prefix +"/"
-os.makedirs(dir, exist_ok=True)
-plt.tick_params(axis='both', which='minor', labelsize=8)
-plt.savefig(dir + 't-test-hist.pdf', bbox_inches = "tight")
-plt.close()
-
-significance_test[significance_test['test-name']=='wilcoxon']['better'].value_counts().nlargest(10).sort_values().plot(kind='barv') 
-dir = 'plots/scores/' + prefix +"/"
-os.makedirs(dir, exist_ok=True)
-plt.tick_params(axis='both', which='minor', labelsize=8)
-plt.savefig(dir + 'wilcoxon-hist.pdf', bbox_inches = "tight")
-plt.close()
+#     if config["legends_outside"]:
+#         ax.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 11}, handles=h, labels=config["legends"])
+#     else:
+#         ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 11} , handles=h, labels=config["legends"])
+#     # ax.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 10} , handles=h, labels=config["legends"])
+#     plt.ylabel("Norm. Best " + config["metric"])
+#     dir = 'plots/percentile/'
+#     os.makedirs(dir, exist_ok=True)
+#     plt.savefig(dir + prefix + '_' + 'Percentile_'+str(p) + '.pdf', bbox_inches = "tight")
+#     # plt.show()
 
 
 # scores = scores.reset_index()

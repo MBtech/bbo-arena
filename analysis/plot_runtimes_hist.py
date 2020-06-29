@@ -27,7 +27,7 @@ for system in config["systems"]:
             plt.figure()
             title = system+"_"+app+"_"+datasize
 
-            runtimes = getAll(app, system, datasize, metric=metric)
+            runtimes = getAll(app, system, datasize, metric=metric, dataset=config["dataset"])
             
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             df_norm = df.copy()

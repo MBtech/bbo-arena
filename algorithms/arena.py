@@ -9,6 +9,7 @@ import json
 import os
 import time
 from joblib import Parallel, delayed
+from utils import *
 
 def generate_init_samples(types, sizes, number_of_nodes, budget, seed):
     init_samples = []
@@ -25,15 +26,22 @@ def generate_init_samples(types, sizes, number_of_nodes, budget, seed):
         count +=1
     return init_samples
 
-def get_existing_experiments(filename, dir='logs/'):
+def get_existing_experiments(filename, dir='hyperparam_cost/'):
+    os.makedirs(dir, exist_ok=True)
+    data = dict()
+    # print(filename)
     if os.path.isfile(dir+filename):
-        data = json.load(open(dir+filename, 'r'))
+        try:
+            data = json.load(open(dir+filename, 'r'))
+        except:
+            print("JSON file corruption: " + dir+filename)
+            sys.exit()
     else:
         data['experiments'] = []
     
     return len(data['experiments'])
 
-def getResults(search, filename, config, dir='logs/'):
+def getResults(search, filename, config, dir='hyperparam_cost/'):
     os.makedirs(dir, exist_ok=True)
     log = config['log']
 
@@ -55,6 +63,9 @@ def callBO(system, app, datasize, algo, budget, parent_dir, types, sizes, number
                                                 acq_func_kwargs):
     new_filename = filename + '_' + estimator + '_' + acq_method
     print(new_filename)
+    if get_existing_experiments(new_filename) >= config["num_of_runs"]:
+        print(get_existing_experiments(new_filename))
+
     for i in range(get_existing_experiments(new_filename), config["num_of_runs"]):
         points_to_evaluate = generate_init_samples(types, sizes, number_of_nodes, config["initial_samples"], seeds[i])
         search = boSkOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, 
@@ -65,7 +76,7 @@ def callBO(system, app, datasize, algo, budget, parent_dir, types, sizes, number
 
 def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config):
     filename = system + '_' + app + '_' + datasize + '_' + algo
-
+    print(filename)
     seeds = range(0, config["num_of_runs"]+1)
     # n_initial_samples = config["initial_samples"]
     n_initial_samples = 0
@@ -75,6 +86,9 @@ def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes,
                 number_of_nodes, config, estimator, acq_method, filename, objective_function, n_initial_samples, seeds, config["bo_args"])
                     for estimator in config["bo_estimators"] for acq_method in config["bo_acq"][estimator])
         return
+
+    if get_existing_experiments(filename) >= config["num_of_runs"]:
+        print(get_existing_experiments(filename))
 
     for i in range(get_existing_experiments(filename), config["num_of_runs"]):
         points_to_evaluate = generate_init_samples(types, sizes, number_of_nodes, config["initial_samples"], seeds[i])
@@ -92,7 +106,7 @@ def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes,
         elif "hc" in algo:
             search = hcOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, \
                         points_to_evaluate=points_to_evaluate,
-                        initial_samples=n_initial_samples)
+                        initial_samples=n_initial_samples, temp=config["sa"]["temp"])
         elif "sa" in algo:
             search = saOpt(app, system, datasize, budget, parent_dir, types, sizes, number_of_nodes, objective_function, \
                         points_to_evaluate=points_to_evaluate,
@@ -106,16 +120,9 @@ def callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes,
             getResults(search, filename, config)
 
 
-number_of_nodes = {
-'large': [4, 6, 8, 10, 12, 16, 24, 32, 40, 48],
-'xlarge': [4, 6, 8, 10, 12, 16, 20, 24],
-'2xlarge': [4, 6, 8, 10, 12]
-}
-types = ['m4', 'c4', 'r4']
-sizes = ['large', 'xlarge', '2xlarge']
-parent_dir = '../scout/dataset/osr_multiple_nodes/'
 
-# python plot_all_runtimes.py pagerank spark
+
+# python arena.py config/config.json runtime|cost
 config = json.load(open(sys.argv[1], 'r'))
 objective = sys.argv[2]
 
@@ -124,7 +131,7 @@ if objective == "cost":
     objective_function = getExecutionCost
 
 budget = config["budget"]
-nJobs = 4
+nJobs = 1
 
 # for system in config["systems"]:
 #     for app in config["applications"][system]:
@@ -133,7 +140,7 @@ nJobs = 4
 #                 callOptimizer(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config) 
                                                 
 
-Parallel(n_jobs=4)(delayed(callOptimizer)(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config) 
+Parallel(n_jobs=9)(delayed(callOptimizer)(system, app, datasize, algo, budget, parent_dir, types, sizes, number_of_nodes, config) 
                 for system in config["systems"] for app in config["applications"][system] for datasize in config["datasizes"] for algo in config["bbo_algos"] )
 
 

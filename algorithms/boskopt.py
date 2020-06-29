@@ -55,6 +55,7 @@ class boSkOpt(optimizer):
             pte.append(p)
         return pte
 
+    @timeit
     def runOptimizer(self):
         # if self.optimizer=='gp':
         #     res = gp_minimize(self.getRuntime, self.domain, n_calls=self.budget,
@@ -77,7 +78,7 @@ class boSkOpt(optimizer):
         min_val = 10000
         
         pte = self.convert_points(self.points_to_evaluate)
-        print("Evaluating initial points")
+        # print("Evaluating initial points")
         for point in pte:
             f_val = self.getObjectiveValue(point)
             count +=1 
@@ -88,7 +89,7 @@ class boSkOpt(optimizer):
             results.append(f_val)
             opt.tell(point, f_val)
 
-        print("Doing optimization runs")
+        # print("Doing optimization runs")
         while count < self.budget:
             next_x = opt.ask()
             if next_x not in trails:

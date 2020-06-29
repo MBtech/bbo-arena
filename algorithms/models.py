@@ -93,7 +93,7 @@ class models():
         mae = list()
         for trials in data['experiments']:
             opt = Optimizer(self.domain, base_estimator=self.optimizer,
-                n_random_starts=self.initial_samples, acq_optimizer="sampling",
+                n_random_starts=0, acq_optimizer="sampling",
                 acq_func=self.acquisition_method,
                 #acq_optimizer_kwargs={'n_points': 100}
                 )
@@ -102,7 +102,7 @@ class models():
             for trial in trials:
                 x = [ trial['params']['type'], trial['params']['size'], trial['params']['num'] ]
                 conf.append(self.convertToDom(x))
-                runtimes.append(trial['runtime'])
+                runtimes.append(trial['value'])
                 # opt.base_estimator_.fit(opt.space.transform([conf]), [trial['runtime']])
             opt.base_estimator_.fit(opt.space.transform(conf), runtimes)
             

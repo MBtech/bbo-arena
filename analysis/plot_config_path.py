@@ -39,7 +39,7 @@ for system in config["systems"]:
             fig = plt.figure()
             title = system+"_"+app+"_"+datasize
 
-            runtimes = getAll(app, system, datasize)
+            runtimes = getAll(app, system, datasize, dataset=config["dataset"])
             
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             pd.set_option('display.max_rows', None)

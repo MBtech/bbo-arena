@@ -32,7 +32,7 @@ if flag:
                 # print(df)
 
                 thresholds = [1.5, 2.0, 2.5]
-                min_value = best = getBest(app, system, datasize)
+                min_value = best = getBest(app, system, datasize, dataset=config["dataset"])
 
                 for algo in df['Algorithms'].unique():
                     print(algo)
@@ -60,12 +60,15 @@ if flag:
 else:
     v = pd.read_csv('plots/violations/violations.csv')
 
-plt.figure(figsize=(5, 3))            
+v['Violations'] = v['Violations']/18.0
+v = v[v['Algorithms']!='LHS']
+plt.figure(figsize=(5, 2.5))            
 ax = sns.barplot(x='Threshold', y='Violations', hue='Algorithms', data=v)
 h, l = ax.get_legend_handles_labels()
 
 plt.xlabel("Normalized Runtime Threshold")
-legends = ['BO(ET)', 'BO(GBRT)', 'BO(GP)', 'BO(RF)', 'SHC', 'LHS', 'RANDOM', 'SA', 'TPE']
+plt.ylabel("Avg. Violations")
+legends = ['BO(ET)', 'BO(GBRT)', 'BO(GP)', 'BO(RF)', 'SHC', 'RANDOM', 'SA', 'TPE']
 plt.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=4, prop={'size': 9}, handles=h, labels=legends)
 plt.savefig('plots/violations/aggregate'+ '.pdf', bbox_inches = "tight")
 

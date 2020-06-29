@@ -2,7 +2,7 @@ import seaborn as sns
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-from utils import getAll
+from utils import *
 import sys
 import numpy as np
 import math
@@ -20,8 +20,14 @@ good_confs = list()
 all_runtimes = list()
 num_of_nodes = [4, 6, 8, 10, 12]
 metric = "cost"
+clip = 2
 
 dividers = {'large': 8, 'xlarge': 4, '2xlarge': 2, '4xlarge': 1}
+
+indices = []
+for t in types[config["dataset"]]:
+    for s in sizes[config["dataset"]]:
+        indices.append(t+'.'+s)
 
 for system in config["systems"]:
     for app in config["applications"][system]:
@@ -30,26 +36,29 @@ for system in config["systems"]:
             title = system+"_"+app+"_"+datasize
             print(title)
 
-            runtimes = getAll(app, system, datasize, metric=metric)
+            runtimes = getAll(app, system, datasize, metric=metric, dataset=config["dataset"])
+            print(runtimes)
             if len(runtimes) == 0:
                 continue
 
             plt.figure()
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             
-            df["Num"] = df.apply(lambda x: (x["Num"] / dividers[x["Size"]]), axis=1)
-
+            if config["dataset"] == "l":
+                df["Num"] = df.apply(lambda x: (x["Num"] / dividers[x["Size"]]), axis=1)
             # df = df[df["Num"].isin(num_of_nodes)]
+
             df["Family"] = df['Type'] + '.'+df['Size']
             df.drop(['Type', 'Size'], axis=1, inplace=True)
             df_norm = df.copy()
+            df_norm["Num"] = df_norm["Num"].astype(int)
             df_norm['Runtime'] =  df['Runtime']/df['Runtime'].min()
-            df_norm['Runtime'] = df_norm['Runtime'].clip(0, 2)
+            df_norm['Runtime'] = df_norm['Runtime'].clip(0, clip)
             df_norm = df_norm.pivot("Num", "Family", "Runtime")
             # df_norm = df_norm.reindex(['c5.large', 'c5.xlarge', 'c5.2xlarge', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 
             #                                 'r4.large', 'r4.xlarge', 'r4.2xlarge'], axis=1)
 
-            # df_norm = df_norm.reindex(['c4.large', 'c4.xlarge', 'c4.2xlarge', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 'r4.large', 'r4.xlarge', 'r4.2xlarge'], axis=1)
+            df_norm = df_norm.reindex(indices, axis=1)
             print(df_norm)
 
             max_runtime = df['Runtime'].max()
@@ -84,12 +93,24 @@ for system in config["systems"]:
                 all_runtimes.append(runtime)
             
             
-            plt.figure(figsize=(5, 3))
-            sns.heatmap(df_norm,  cbar_kws={'label': 'Norm. Exec. '+ metric}, linewidths=.5, linecolor="green", \
+            plt.figure(figsize=(4, 3))
+            ax = sns.heatmap(df_norm,  cbar_kws={'label': 'Norm. Exec. '+ metric}, linewidths=.5, linecolor="green", \
                         cmap=sns.diverging_palette(250, 15, s=75, l=40, n=9, center="dark"))
-            plt.xticks(rotation=45)
+
+            cbar = ax.collections[0].colorbar
+            labels = [item.get_text() for item in cbar.ax.get_yticklabels()]
+            labels[-1] = '$\geq$' + str(clip)
+            cbar.ax.set_yticklabels(labels)
+
+            ax.tick_params(axis='both', which='major', labelsize=9, tick1On=True)
+            plt.xticks(rotation=90)
             plt.xlabel('Instance Type')
-            plt.ylabel('Number of Nodes')
+
+            if config["dataset"] == "l":
+                plt.ylabel('Cluster Size')
+            else:
+                plt.ylabel('Number of Instances')
+
             # plt.savefig('plots/data/pdf_'+ title + '.pdf', bbox_inches = "tight")
             # plt.title(title)
             # plt.legend(loc='upper right', ncol=2, prop={'size': 9})

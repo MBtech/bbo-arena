@@ -26,7 +26,7 @@ for system in config["systems"]:
             # stats = df.groupby(['Algo', 'Budget'])['Runtime'].agg(['mean', 'count', 'std'])
             sns.relplot(x='Budget', y='Best Runtime', hue="Algorithms", ci="sd", data=df, kind="line")
 
-            best = getBest(app, system, datasize)
+            best = getBest(app, system, datasize, dataset=config["dataset"])
             plt.axhline(best, color='black')
             plt.xlim(0, 30)
             plt.title(title)

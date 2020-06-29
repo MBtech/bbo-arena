@@ -59,7 +59,7 @@ for system in config["systems"]:
             # print(df_select)
 
 
-            runtimes = getAll(app, system, datasize)
+            runtimes = getAll(app, system, datasize, dataset=config["dataset"])
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             df["Cost"] = df.apply(lambda x: (prices[x["Type"] + "." + x["Size"]]/3600.0) * x["Num"] * x["Runtime"] , axis=1)
             min_runtime = df['Runtime'].min()

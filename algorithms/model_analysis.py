@@ -14,7 +14,6 @@ types = ['m4', 'c4', 'r4']
 sizes = ['large', 'xlarge', '2xlarge']
 parent_dir = '../scout/dataset/osr_multiple_nodes/'
 
-# python plot_all_runtimes.py pagerank spark
 config = json.load(open(sys.argv[1], 'r'))
 
 budget = config["budget"]
@@ -25,7 +24,7 @@ for system in config["systems"]:
             data = list()
             for algo in config["bbo_algos"]:
                 filename = system + '_' + app + '_' + datasize + '_' + algo
-                if algo == "bo":
+                if "bo" in algo:
                     for estimator in config["bo_estimators"]:
                         for acq_method in config["bo_acq"][estimator]:
                             new_filename = filename + '_' + estimator + '_' + acq_method
