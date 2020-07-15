@@ -13,13 +13,16 @@ if len(sys.argv) > 1:
 else:
     configJsonName = "test_configs/all_runs.json"
 
+plt.rcParams.update({'font.size': 12})
+# plt.rc('ytick', labelsize=9)
 
 config = json.load(open(configJsonName, 'r'))
 count = 0
 good_confs = list()
 all_runtimes = list()
 num_of_nodes = [4, 6, 8, 10, 12]
-metric = "cost"
+metric = sys.argv[2]
+label = sys.argv[3]
 clip = 2
 
 dividers = {'large': 8, 'xlarge': 4, '2xlarge': 2, '4xlarge': 1}
@@ -37,7 +40,7 @@ for system in config["systems"]:
             print(title)
 
             runtimes = getAll(app, system, datasize, metric=metric, dataset=config["dataset"])
-            print(runtimes)
+            # print(runtimes)
             if len(runtimes) == 0:
                 continue
 
@@ -53,17 +56,18 @@ for system in config["systems"]:
             df_norm = df.copy()
             df_norm["Num"] = df_norm["Num"].astype(int)
             df_norm['Runtime'] =  df['Runtime']/df['Runtime'].min()
+            print(df['Runtime'].min())
             df_norm['Runtime'] = df_norm['Runtime'].clip(0, clip)
             df_norm = df_norm.pivot("Num", "Family", "Runtime")
             # df_norm = df_norm.reindex(['c5.large', 'c5.xlarge', 'c5.2xlarge', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 
             #                                 'r4.large', 'r4.xlarge', 'r4.2xlarge'], axis=1)
 
             df_norm = df_norm.reindex(indices, axis=1)
-            print(df_norm)
+            # print(df_norm)
 
             max_runtime = df['Runtime'].max()
             r = max_runtime / df['Runtime'].min()
-            print(r)
+            # print(r)
 
             min_runtime = df['Runtime'].min()
             runtime_threashold = 1.1*min_runtime
@@ -73,13 +77,13 @@ for system in config["systems"]:
             thresholds = ['1.1', '1.2', '1.5']
             probabilities = pd.DataFrame({'Budget':[], 'Threshold': [], 'Probability': []})
             for threshold in thresholds:
-                print(threshold)
+                # print(threshold)
                 prob = len(df[df['Runtime']<=min_runtime*float(threshold)])/len(df)
                 for num in range(1, config["budget"]+1):
                     probabilities = probabilities.append({'Probability': (1 - (1 - prob)**num ), 'Budget': num, 'Threshold': threshold}, 
                             ignore_index=True)
             
-            print(probabilities)
+            # print(probabilities)
             # sys.exit()
             sns.lineplot(x='Budget', y='Probability', hue='Threshold', data=probabilities, palette=sns.color_palette("Set1", 3))
             plt.ylabel('Pick Probability')
@@ -87,6 +91,7 @@ for system in config["systems"]:
 
             plt.savefig('plots/pick_prob/'+metric+'/' +title+ '.pdf', bbox_inches = "tight")
             # plt.show()
+            plt.close()
 
             for runtime in runtimes:
                 runtime.append(title)
@@ -94,7 +99,7 @@ for system in config["systems"]:
             
             
             plt.figure(figsize=(4, 3))
-            ax = sns.heatmap(df_norm,  cbar_kws={'label': 'Norm. Exec. '+ metric}, linewidths=.5, linecolor="green", \
+            ax = sns.heatmap(df_norm,  cbar_kws={'label': 'Norm. Exec. '+ label}, linewidths=.5, linecolor="green", \
                         cmap=sns.diverging_palette(250, 15, s=75, l=40, n=9, center="dark"))
 
             cbar = ax.collections[0].colorbar
@@ -102,7 +107,7 @@ for system in config["systems"]:
             labels[-1] = '$\geq$' + str(clip)
             cbar.ax.set_yticklabels(labels)
 
-            ax.tick_params(axis='both', which='major', labelsize=9, tick1On=True)
+            ax.tick_params(axis='both', which='major', labelsize=10, tick1On=True)
             plt.xticks(rotation=90)
             plt.xlabel('Instance Type')
 
@@ -117,4 +122,5 @@ for system in config["systems"]:
 
             plt.savefig('plots/heatmaps/'+metric+'/' +title+ '.pdf', bbox_inches = "tight")
             # plt.show()
+            plt.close()
             # sys.exit()

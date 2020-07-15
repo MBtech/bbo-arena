@@ -1,0 +1,2 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+31,hadoop_wordcount_huge,BO_9_1.0_ET_LCB,BO_3_0.01_ET_EI,0.8617274844321391,0.04216819709715596,30.0,wilcoxon,BO_9_1.0_ET_LCB

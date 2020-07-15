@@ -1,0 +1,5 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+13,hadoop_wordcount_huge,BO_3_0.05_GBRT_PI,BO_3_0.2_GBRT_EI,2.392155496783618,0.020636106824564914,6.0,wilcoxon,BO_3_0.05_GBRT_PI
+14,hadoop_wordcount_huge,BO_3_0.05_GBRT_PI,BO_3_0.2_GBRT_EI,2.447886441492405,0.01614838071917426,6.0,t-test,BO_3_0.05_GBRT_PI
+15,hadoop_wordcount_huge,BO_3_1.0_GBRT_LCB,BO_3_0.2_GBRT_EI,1.2925912266482087,0.03499234561896747,6.0,wilcoxon,BO_3_1.0_GBRT_LCB
+16,hadoop_wordcount_huge,BO_3_0.05_GBRT_PI,BO_3_0.2_GBRT_EI,1.2788035868972945,0.02727930957600094,12.0,wilcoxon,BO_3_0.05_GBRT_PI

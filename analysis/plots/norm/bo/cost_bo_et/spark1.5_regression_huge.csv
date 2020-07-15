@@ -1,0 +1,4 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+96,spark1.5_regression_huge,BO_3_0.01_ET_PI,BO_3_0.01_ET_EI,-2.5127973446041176,0.012291926447971729,12.0,wilcoxon,BO_3_0.01_ET_EI
+97,spark1.5_regression_huge,BO_3_0.01_ET_PI,BO_3_0.01_ET_EI,-2.2199407745805733,0.02872764039453514,12.0,t-test,BO_3_0.01_ET_EI
+98,spark1.5_regression_huge,BO_9_1.0_ET_LCB,BO_3_0.01_ET_EI,-2.6920366613660027,0.005596104878811388,12.0,wilcoxon,BO_3_0.01_ET_EI

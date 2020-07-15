@@ -17,7 +17,7 @@ def sar_helper(ip,  dir, filename, command, config):
     client.connect(ip, username=config["username"], password="", pkey=None, key_filename=config["keyname"])
 
     # SCPCLient takes a paramiko transport as an argument
-    scp = SCPClient(client.get_transport())
+    scp = SCPClient(client.get_transport(), socket_timeout=60)
 
     scp.close()
     if command=="start":
@@ -30,26 +30,24 @@ def sar_helper(ip,  dir, filename, command, config):
     else:
         export(client)
 
-# "keyname": "/Users/mb/Downloads/bilal-us-east.pem.txt"
-command = sys.argv[1]
-directory = sys.argv[2]
-hosts = sys.argv[3].split(',')
-config = json.load(open('config.json'))
-filenames = ["test"]
 
-client = ParallelSSHClient(hosts,  user=config["username"], password="", pkey=config["keyname"])
+def sar(command, directory, hosts, filenames):
+    # "keyname": "/Users/mb/Downloads/bilal-us-east.pem.txt"
+    config = json.load(open('config.json'))
 
-if sys.argv[1]=="start":
-    start_parallel(client)
-elif sys.argv[1]=="terminate":
-    stop_parallel(client)
-elif sys.argv[1]=="collectcsv":
-    count = 0
-    for host in hosts:
-        
-        sar_helper(host, directory, filenames[count], command, config)
-        count +=1
+    client = ParallelSSHClient(hosts,  user=config["username"], password="", pkey=config["keyname"], timeout=600, pool_size=64)
 
-    # getfiles_parallel(client, framework, len(hosts), confFile, hosts)
-else:
-    export_parallel(client)
+    if command=="start":
+        start_parallel(client)
+    elif command=="terminate":
+        stop_parallel(client)
+    elif command=="collectcsv":
+        count = 0
+        for host in hosts:
+            
+            sar_helper(host, directory, filenames[count], command, config)
+            count +=1
+
+        # getfiles_parallel(client, framework, len(hosts), confFile, hosts)
+    else:
+        export_parallel(client)

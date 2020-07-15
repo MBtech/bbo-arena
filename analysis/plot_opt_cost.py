@@ -6,6 +6,7 @@ from utils import *
 import sys 
 import numpy as np
 import os
+from scip import stats
 
 steps = [6, 12, 18, 24, 30]
 # steps = [9, 15, 21, 30]
@@ -23,11 +24,12 @@ prefix = config["prefix"]
 scores = dict()
 log_dir = config["log_dir"]
 value_key = config["value_key"]
+metric = config["metric"]
 
 # Make sure that the index name is correct for bo case 
 algos = list()
 for algo in config['bbo_algos']:
-    if 'bo' in algo:
+    if 'bo1' in algo:
         for estimator in config["bo_estimators"]:
             for acq_method in config["bo_acq"][estimator]:
             
@@ -51,18 +53,23 @@ for system in config["systems"]:
             title = system+"_"+app+"_"+datasize
             print(title)
             runtimes = parseLogsAll(system, app, datasize, configJsonName, logDir=log_dir, value_key=value_key)
+            if len(runtimes) == 0:
+                continue
             df = pd.DataFrame(runtimes, columns = ['Algorithms', 'Budget', 'Runtime', 'Experiment', 'Type', 'Size', 'Num'])
-            df["Cost"] = df.apply(lambda x: (prices[x["Type"] + "." + x["Size"]]/3600.0) * x["Num"] * x["Runtime"] , axis=1)
+            # print(df[df['Runtime']>=100])
+            if "Runtime" in metric:
+                df["Cost"] = df.apply(lambda x: (prices[x["Type"] + "." + x["Size"]]/3600.0) * x["Num"] * x["Runtime"] , axis=1)
+            else:
+                df["Cost"] = df["Runtime"]
             # df_select = df[df['Budget'].isin(steps)]
             df_select = pd.DataFrame(df)
             df_select['Algorithms'] = df['Algorithms'].str.upper()
             # print(df_select)
 
 
-            runtimes = getAll(app, system, datasize, dataset=config["dataset"])
-            df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
-            df["Cost"] = df.apply(lambda x: (prices[x["Type"] + "." + x["Size"]]/3600.0) * x["Num"] * x["Runtime"] , axis=1)
-            min_runtime = df['Runtime'].min()
+            # runtimes = getAll(app, system, datasize, dataset=config["dataset"])
+            # df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
+            # df["Cost"] = df.apply(lambda x: (prices[x["Type"] + "." + x["Size"]]/3600.0) * x["Num"] * x["Runtime"] , axis=1)
 
             cost = pd.DataFrame({'Algorithms':[], 'Budget':[], 'Cost':[], 'Experiment': []})
 
@@ -76,8 +83,23 @@ for system in config["systems"]:
                     df_sum["Experiment"] = eid
                     df_sum["Budget"] = budget
                     cost = cost.append(df_sum)
-                    # print(df_sum.head())
+                    # print(df_sum.head)
                 # sys.exit()
+
+            best_algo = "TPE"
+            X = cost.loc[df['Algorithms'] == best_algo, ].to_numpy()
+            sdf = sdf.append({'algorithm': best_algo, 'value': np.mean(X), 'metric': e}, ignore_index=True)
+            for algo in df['algorithm'].unique():
+                if algo in best_algo:
+                    continue
+                Y = df.loc[df['algorithm'] == algo, e].to_numpy()
+                p_value = stats.ttest_ind(X,Y).pvalue
+                # print(p_value)
+                if p_value <= 0.05:
+                    sdf = sdf.append({'algorithm': algo, 'value': np.mean(Y), 'metric': e}, ignore_index=True)
+                else:
+                    sdf = sdf.append({'algorithm': algo, 'value': np.mean(X), 'metric': e}, ignore_index=True)
+
 
             temp = cost.groupby(['Algorithms', 'Budget'])['Cost'].median().reset_index()
             temp["Workload"] = title 
@@ -90,8 +112,8 @@ for system in config["systems"]:
             # plt.legend(loc='upper right', ncol=2, prop={'size': 8})
 
             dir = 'plots/opt_cost/'
-            os.makedirs(dir, exist_ok=True)
-            plt.savefig(dir + prefix + '_' + title +'.pdf', bbox_inches = "tight")
+            os.makedirs(dir + prefix, exist_ok=True)
+            plt.savefig(dir + prefix + '/' + title +'.pdf', bbox_inches = "tight")
 
             # plt.show()
 

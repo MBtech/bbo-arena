@@ -1,0 +1,3 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+0,spark_lda_huge,HC_9_100,HC_3_750,-1.8509906365602349,0.04634783412582584,30.0,wilcoxon,HC_3_750
+1,spark_lda_huge,HC_9_250,HC_3_750,-1.8509906365602349,0.04634783412582584,30.0,wilcoxon,HC_3_750

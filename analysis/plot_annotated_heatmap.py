@@ -23,8 +23,8 @@ metric = "cost"
 
 dividers = {'large': 8, 'xlarge': 4, '2xlarge': 2, '4xlarge': 1}
 indices = []
-for t in types:
-    for s in sizes:
+for t in types[config["dataset"]]:
+    for s in sizes[config["dataset"]]:
         indices.append(t+'.'+s)
 
 algos = list()
@@ -51,7 +51,8 @@ for system in config["systems"]:
 
             df = pd.DataFrame(runtimes, columns = ['Runtime', 'Num', 'Type', 'Size'])
             
-            df["Num"] = df.apply(lambda x: (x["Num"] / dividers[x["Size"]]), axis=1)
+            if config["dataset"] == "l":
+                df["Num"] = df.apply(lambda x: (x["Num"] / dividers[x["Size"]]), axis=1)
 
             # df = df[df["Num"].isin(num_of_nodes)]
             df["Family"] = df['Type'] + '.'+df['Size']
@@ -60,6 +61,7 @@ for system in config["systems"]:
             df_norm["Num"] = df_norm["Num"].astype(int)
             df_norm['Runtime'] =  df['Runtime']/df['Runtime'].min()
             df_norm['Runtime'] = df_norm['Runtime'].clip(0, 2)
+            print(df_norm)
             df_norm = df_norm.pivot("Num", "Family", "Runtime")
             # df_norm = df_norm.reindex(['c5.large', 'c5.xlarge', 'c5.2xlarge', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 
             #                                 'r4.large', 'r4.xlarge', 'r4.2xlarge'], axis=1)
@@ -70,9 +72,6 @@ for system in config["systems"]:
             total_cols=len(df_norm.axes[1])  
             
             
-
-
-           
             runtimes = parseLogsAll(system, app, datasize, configJsonName, config['log_dir'], config['value_key'])
             df = pd.DataFrame(runtimes, columns = ['Algorithms', 'Budget', 'Runtime', 'Experiment', 'Type', 'Size', 'Num'])
             # print(df)

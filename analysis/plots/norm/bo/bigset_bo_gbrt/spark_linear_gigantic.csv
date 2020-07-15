@@ -1,0 +1,4 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+3,spark_linear_gigantic,BO_3_0.05_GBRT_PI,BO_3_0.01_GBRT_EI,1.3098257763368515,0.029593775253365137,6.0,wilcoxon,BO_3_0.05_GBRT_PI
+4,spark_linear_gigantic,BO_6_1.0_GBRT_LCB,BO_3_0.05_GBRT_PI,-2.874722888065616,0.0016589696979125504,6.0,wilcoxon,BO_3_0.05_GBRT_PI
+5,spark_linear_gigantic,BO_6_1.0_GBRT_LCB,BO_3_0.05_GBRT_PI,-2.8889788896313138,0.004757774172917451,6.0,t-test,BO_3_0.05_GBRT_PI

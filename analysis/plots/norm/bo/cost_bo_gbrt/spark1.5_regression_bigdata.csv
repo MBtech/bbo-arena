@@ -1,0 +1,4 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+81,spark1.5_regression_bigdata,BO_3_1.0_GBRT_LCB,BO_3_0.05_GBRT_EI,1.065095170758124,0.049498594413925324,24.0,wilcoxon,BO_3_1.0_GBRT_LCB
+82,spark1.5_regression_bigdata,BO_3_1.0_GBRT_LCB,BO_3_0.05_GBRT_EI,2.229795504310576,0.02804347388489351,24.0,t-test,BO_3_1.0_GBRT_LCB
+83,spark1.5_regression_bigdata,BO_3_1.0_GBRT_LCB,BO_3_0.05_GBRT_EI,1.7337956986774639,0.03808033241587273,30.0,wilcoxon,BO_3_1.0_GBRT_LCB

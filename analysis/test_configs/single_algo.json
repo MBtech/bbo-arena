@@ -9,15 +9,17 @@
   "budget": 30,
   "datasizes": ["huge", "bigdata"],
   "bbo_algos": [
-              "lhs"
-            ],
+              "hc_3",
+              "hc_6",
+              "hc_9"
+              ],
 
-"bo_estimators": ["RF", "ET", "GBRT", "GP"],
+"bo_estimators": ["GBRT"],
 "bo_acq": {
-      "RF": ["LCB", "EI", "PI"],
-      "ET": ["LCB", "EI", "PI"],
-      "GBRT": ["LCB", "EI", "PI"],
-      "GP": ["LCB", "EI", "PI", "gp_hedge"]
+      "RF": ["PI"],
+      "ET": ["PI"],
+      "GBRT": ["PI"],
+      "GP": ["PI"]
     },
 
 "log": true

@@ -1,0 +1,2 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+1,spark_lda_huge,BO_6_1.0_ET_LCB,BO_6_0.01_ET_EI,1.7923931676188494,0.014828964413498208,30.0,wilcoxon,BO_6_1.0_ET_LCB

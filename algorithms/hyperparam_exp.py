@@ -9,7 +9,7 @@ import itertools
 
 config_filename = sys.argv[1]
 config = json.load(open(config_filename, 'r'))
-metric = "cost"
+metric = "Runtime"
 
 cmd = ["python", "arena.py", config_filename, metric]
 
@@ -19,7 +19,7 @@ hyper_params = {"hc": {"temp": [50, 100, 250, 500, 750, 1000]},
                 "sa": {"schedule_constant": [0.3, 0.5, 0.7, 0.9], "temp": [50, 100, 250, 500, 750, 1000]},
                 "tpe_args": {"gamma": [0.1, 0.25, 0.4, 0.55, 0.7]},
                 "bo_args": {
-                    "xi": [0.01, 0.05, 0.1, 0.2],
+                    # "xi": [0.01, 0.05, 0.1, 0.2],
                     "kappa": [1.0, 1.5, 1.96, 3.0, 5.0]
                     }
                 }

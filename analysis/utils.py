@@ -65,6 +65,22 @@ sizes = {'s': ['large', 'xlarge', '2xlarge'], 'l': ['large', 'xlarge', '2xlarge'
 # }
 # types = ['m5', 'm5a', 'c5', 'c5n', 'r5']
 # sizes = ['large', 'xlarge', '2xlarge', '4xlarge']
+def transform_labels(labels):
+    # print(labels)
+    transformed_labels = []
+    for label in labels:
+        if "BO" in label:
+            transformed_label = label.split('_')[-2] + '(' + label.split('_')[-1] + ')'
+        elif "bo" in label:
+            transformed_label = label.split('_')[-2] 
+        elif "HC" in label or "hc" in label:
+            transformed_label = 'SHC'
+        else:
+            transformed_label = label.split('_')[0]
+
+        transformed_labels.append(transformed_label)
+    # print(transformed_labels)
+    return transformed_labels
 
 def getExecutionCost(jsonName, instType, instSize, num):
     price = prices[instType + '.' + instSize]
@@ -86,7 +102,7 @@ def getAll(app, system, datasize, metric="runtime", dataset='s'):
                     return []
 
                 jsonName= dir + 'report.json'
-                if metric=="runtime":
+                if "runtime" in metric or "Runtime" in metric:
                     report = json.load(open(jsonName, 'r'))
                     if report["completed"]:
                         runtime = float(report["elapsed_time"])
@@ -117,11 +133,34 @@ def getBest(app, system, datasize, dataset='s'):
                 # print(str(num) + '_'+ t+'.'+size, runtime)
     return min(runtimes)
     
+def getCost(app, system, datasize, num, t, size, dataset='s'):
+    dir = parent_dir[dataset] + str(num) + '_'+ t+'.'+size+ '_'+ app + "_" + system + "_" + datasize + "_1/"
+    if not os.path.isdir(dir):
+        return []
+
+    jsonName= dir + 'report.json'
+    price = prices[t + '.' + size]
+    report = json.load(open(jsonName, 'r'))
+    runtime = float(report["elapsed_time"])
+    cost = (price/3600.0)*runtime*num
+    return cost
+
+def getRuntime(app, system, datasize, num, t, size, dataset='s'):
+    dir = parent_dir[dataset] + str(num) + '_'+ t+'.'+size+ '_'+ app + "_" + system + "_" + datasize + "_1/"
+    if not os.path.isdir(dir):
+        return []
+    jsonName= dir + 'report.json'
+    report = json.load(open(jsonName, 'r'))
+    runtime = float(report["elapsed_time"])
+    return runtime
+
 def parseLogs(system, app, datasize, configJsonName = 'test_configs/all_runs.json', logDir='../algorithms/logs/', value_key='value'):
     config = json.load(open(configJsonName, 'r'))
 
     budget = config["budget"]
     optRuns = config["num_of_runs"]
+    dataset = config["dataset"]
+    metric = config["metric"]
     # optRuns = 10
 
     runtimes = list()
@@ -183,7 +222,8 @@ def parseLogsAll(system, app, datasize, configJsonName = 'test_configs/all_runs.
 
     budget = config["budget"]
     optRuns = config["num_of_runs"]
-    # optRuns = 10
+    dataset = config["dataset"]
+    metric = config["metric"]
 
     runtimes = list()
     algoName = ""
@@ -211,7 +251,14 @@ def parseLogsAll(system, app, datasize, configJsonName = 'test_configs/all_runs.
                             instType = run["params"]["type"]
                             instSize = run["params"]["size"]
                             instNum = run["params"]["num"]
-                            runtimes.append([algoName, count, best_time, i, instType, instSize, instNum])
+                            completed = True
+                            if "Runtime" not in metric and best_time == 100.0:
+                                best_time = getCost(app, system, datasize, instNum, instType, instSize, dataset)
+                                completed = False 
+                            if "Runtime" in metric and best_time == 3600.0:
+                                best_time = getRuntime(app, system, datasize, instNum, instType, instSize, dataset)
+                                completed = False 
+                            runtimes.append([algoName, count, best_time, i, instType, instSize, instNum, completed])
 
         else:
             for i in range(0, optRuns):
@@ -240,5 +287,12 @@ def parseLogsAll(system, app, datasize, configJsonName = 'test_configs/all_runs.
                         instType = run["params"]["type"]
                         instSize = run["params"]["size"]
                         instNum = run["params"]["num"]
-                        runtimes.append([algoName, count, best_time, i, instType, instSize, instNum])
+                        completed = True
+                        if "Runtime" not in metric and best_time == 100.0:
+                            best_time = getCost(app, system, datasize, instNum, instType, instSize, dataset)
+                            completed = False 
+                        if "Runtime" in metric and best_time == 3600.0:
+                            best_time = getRuntime(app, system, datasize, instNum, instType, instSize, dataset)
+                            completed = False 
+                        runtimes.append([algoName, count, best_time, i, instType, instSize, instNum, completed])
     return runtimes

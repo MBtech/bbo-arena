@@ -1,0 +1,2 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+1,hadoop_pagerank_bigdata,BO_6_1.5_GP_LCB,BO_6_0.2_GP_EI,1.3339541459009514,0.0283822052574741,18.0,wilcoxon,BO_6_1.5_GP_LCB

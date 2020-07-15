@@ -13,14 +13,15 @@ def transform_labels(labels):
     for label in labels:
         if "BO" in label.get_text():
             transformed_label = label.get_text().split('_')[-2] + '(' + label.get_text().split('_')[-1] + ')'
-            
+        elif "HC" in label.get_text():
+            transformed_label = "SHC"
         else:
             transformed_label = label.get_text().split('_')[0]
 
         transformed_labels.append(transformed_label)
     return transformed_labels
 
-
+plt.rcParams.update({'font.size': 11})
 steps = [6, 12, 18, 24, 30]
 # steps = [9, 15, 21, 30]
 percentiles = [0.5, 0.95]
@@ -50,6 +51,7 @@ for algo in config['bbo_algos']:
     else:
         algos.append(algo.upper())
 
+print(algos)
 
 scores = pd.DataFrame({ 'Algorithms': np.tile(np.repeat(algos, len(percentiles)), len(steps)), 'Score': [0.0]*len(algos)*len(steps)*len(percentiles), 
                     'Budget': np.repeat(steps, len(algos)*len(percentiles) ), 'Percentile': np.tile(percentiles, len(algos)*len(steps) )
@@ -206,25 +208,48 @@ for system in config["systems"]:
                 i +=1 
 print(significance_result)
 
-fig, ax1 = plt.subplots(figsize=(4,3))
+fig, ax1 = plt.subplots(figsize=(4,2.5))
 ax1= sns.barplot(x='budget', y='performance', hue='algorithm', data=significance_result)
 plt.axhline(y=1.0)
 ax1.set_xticklabels(steps)
 ax1.set_ylim([0.9, 1.3])
-ax1.set_ylabel('Norm. Perf w.r.t ' + best_algo.split('_')[-2] + '(' + best_algo.split('_')[-1] + ')')
+ax1.set_ylabel('Norm. Perf w.r.t. ' + best_algo.split('_')[-2] + '(' + best_algo.split('_')[-1] + ')')
 h, l = ax1.get_legend_handles_labels()
-if config["legends_outside"]:
-    ax1.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 9})
-else:
-    ax1.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 9})
+
+# if config["legends_outside"]:
+#     ax1.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
+#     # l = axi.legend(ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
+# else:
+#     ax1.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
+
+ax1.legend(loc='upper right',  ncol=2, prop={'size': 9}, handles=h, labels=l)
 
 print(best_algo_normalized)
 ax2 = ax1.twinx()
 ax2.set_ylim([1.0, 1.5])
 sns.lineplot(x='budget', y='norm. perf', color='black', marker="o", ci=None, data=best_algo_normalized, ax=ax2)
-ax2.set_ylabel('Norm. Perf w.r.t Best Conf.')
+ax2.set_ylabel('Norm. Perf w.r.t. Best Conf.')
 dir = 'plots/scores/' + prefix +"/"
-os.makedirs(dir, exist_ok=True)
-plt.savefig(dir + 'perf.pdf', bbox_inches = "tight")
 
+os.makedirs(dir, exist_ok=True)
+fig.savefig(dir + 'perf.pdf', bbox_inches = "tight")
 plt.close()
+
+## Separate Legends plot
+# legendfig = plt.figure()
+# axi = legendfig.add_subplot(111)
+# if config["legends_outside"]:
+#     axi.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
+#     # l = axi.legend(ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
+# else:
+#     axi.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
+# axi.xaxis.set_visible(False)
+# axi.yaxis.set_visible(False)
+# plt.gca().set_axis_off()
+
+# fig  = l.figure
+# fig.canvas.draw()
+# bbox  = l.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+# plt.savefig('plots/scores/legend.pdf', bbox_inches=bbox)
+
+# plt.close()

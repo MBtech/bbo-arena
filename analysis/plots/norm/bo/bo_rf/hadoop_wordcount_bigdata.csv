@@ -1,0 +1,9 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+34,hadoop_wordcount_bigdata,BO_3_0.2_RF_PI,BO_3_0.1_RF_EI,2.223256909834919,0.00391340002167538,24.0,wilcoxon,BO_3_0.2_RF_PI
+35,hadoop_wordcount_bigdata,BO_3_0.2_RF_PI,BO_3_0.1_RF_EI,3.3883257640285875,0.001013999700027938,24.0,t-test,BO_3_0.2_RF_PI
+36,hadoop_wordcount_bigdata,BO_3_1.0_RF_LCB,BO_3_0.2_RF_PI,-1.7200080589265496,0.011061086085117086,24.0,wilcoxon,BO_3_1.0_RF_LCB
+37,hadoop_wordcount_bigdata,BO_3_1.0_RF_LCB,BO_3_0.2_RF_PI,-2.6396696623443088,0.009656243890161405,24.0,t-test,BO_3_1.0_RF_LCB
+38,hadoop_wordcount_bigdata,BO_3_0.2_RF_PI,BO_3_0.1_RF_EI,1.7234549688642782,0.0035104707374242826,30.0,wilcoxon,BO_3_0.2_RF_PI
+39,hadoop_wordcount_bigdata,BO_3_0.2_RF_PI,BO_3_0.1_RF_EI,3.3210540833440607,0.0012608393664962766,30.0,t-test,BO_3_0.2_RF_PI
+40,hadoop_wordcount_bigdata,BO_3_1.0_RF_LCB,BO_3_0.2_RF_PI,-1.034072981318567,0.023140931308743732,30.0,wilcoxon,BO_3_1.0_RF_LCB
+41,hadoop_wordcount_bigdata,BO_3_1.0_RF_LCB,BO_3_0.2_RF_PI,-2.536316182698546,0.012782001115263283,30.0,t-test,BO_3_1.0_RF_LCB

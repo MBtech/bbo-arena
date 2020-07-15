@@ -1,0 +1,2 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+32,spark1.5_naive-bayes_huge,BO_3_1.0_GBRT_LCB,BO_3_0.05_GBRT_PI,-1.444255263908265,0.04152887046883673,24.0,wilcoxon,BO_3_1.0_GBRT_LCB

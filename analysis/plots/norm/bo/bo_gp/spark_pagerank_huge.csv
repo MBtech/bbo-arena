@@ -1,0 +1,2 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+24,spark_pagerank_huge,BO_6_1.5_GP_LCB,BO_6_0.2_GP_EI,-0.36881936333695553,0.03812065448791387,18.0,wilcoxon,BO_6_1.5_GP_LCB

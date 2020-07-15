@@ -5,24 +5,26 @@
     "spark": ["join", "lr", "pagerank"],
     "spark1.5": ["kmeans", "naive-bayes", "regression"]
   },
-  "num_of_runs": 100,
+  "num_of_runs": 50,
   "budget": 30,
   "datasizes": ["huge", "bigdata"],
   "bbo_algos": [
-              "lhs",
-              "random",
-              "random2x",
-              "tpe",
-              "bo",
-              "hc",
-              "sa"
+            "lhs",
+            "random",
+            "tpe_9",
+            "bo_3",
+            "hc_9",
+            "sa_9"
             ],
 
-"bo_estimators": ["GP"],
+"bo_estimators": ["GBRT", "GP", "RF", "ET"],
 "bo_acq": {
-      "RF": ["PI"],
-      "ET": ["PI"],
-      "GBRT": ["PI"],
-      "GP": ["LCB"]
-    }
+  "RF": ["LCB", "EI", "PI"],
+  "ET": ["LCB", "EI", "PI"],
+  "GBRT": ["LCB", "EI", "PI"],
+  "GP": ["LCB", "EI", "PI", "gp_hedge"]
+    },
+
+"dataset": "s"
+
 }

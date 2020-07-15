@@ -1,0 +1,3 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+21,hadoop_terasort_huge,BO_9_1.0_ET_LCB,BO_3_0.01_ET_EI,2.014699808707815,0.04667581732534734,18.0,t-test,BO_9_1.0_ET_LCB
+22,hadoop_terasort_huge,BO_9_1.0_ET_LCB,BO_3_0.01_ET_EI,0.7721078260511967,0.04790587352709855,24.0,wilcoxon,BO_9_1.0_ET_LCB

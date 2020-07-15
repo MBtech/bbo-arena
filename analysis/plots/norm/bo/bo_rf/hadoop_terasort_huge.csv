@@ -1,0 +1,4 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+21,hadoop_terasort_huge,BO_3_0.2_RF_PI,BO_3_0.1_RF_EI,1.3925516148423367,0.014094843940694067,18.0,wilcoxon,BO_3_0.2_RF_PI
+22,hadoop_terasort_huge,BO_3_0.2_RF_PI,BO_3_0.1_RF_EI,1.6131538508569645,0.007720303648787038,24.0,wilcoxon,BO_3_0.2_RF_PI
+23,hadoop_terasort_huge,BO_3_1.0_RF_LCB,BO_3_0.1_RF_EI,1.4718305434100936,0.03286453791814294,24.0,wilcoxon,BO_3_1.0_RF_LCB

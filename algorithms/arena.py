@@ -26,7 +26,7 @@ def generate_init_samples(types, sizes, number_of_nodes, budget, seed):
         count +=1
     return init_samples
 
-def get_existing_experiments(filename, dir='hyperparam_cost/'):
+def get_existing_experiments(filename, dir='hyperparam/'):
     os.makedirs(dir, exist_ok=True)
     data = dict()
     # print(filename)
@@ -41,7 +41,7 @@ def get_existing_experiments(filename, dir='hyperparam_cost/'):
     
     return len(data['experiments'])
 
-def getResults(search, filename, config, dir='hyperparam_cost/'):
+def getResults(search, filename, config, dir='hyperparam/'):
     os.makedirs(dir, exist_ok=True)
     log = config['log']
 
@@ -127,7 +127,7 @@ config = json.load(open(sys.argv[1], 'r'))
 objective = sys.argv[2]
 
 objective_function = getExecutionTime
-if objective == "cost":
+if "cost" in objective:
     objective_function = getExecutionCost
 
 budget = config["budget"]

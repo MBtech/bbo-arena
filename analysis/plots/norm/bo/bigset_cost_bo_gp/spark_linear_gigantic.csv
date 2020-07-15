@@ -1,0 +1,5 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+12,spark_linear_gigantic,BO_3_0.01_1.5_GP_GP_HEDGE,BO_3_0.01_GP_EI,0.9892631521280957,0.03546470751403722,6.0,wilcoxon,BO_3_0.01_1.5_GP_GP_HEDGE
+13,spark_linear_gigantic,BO_3_1.0_GP_LCB,BO_3_0.01_GP_EI,3.0953251240802437,0.005256256959290146,18.0,wilcoxon,BO_3_1.0_GP_LCB
+14,spark_linear_gigantic,BO_3_0.01_1.5_GP_GP_HEDGE,BO_3_0.01_GP_EI,2.1508718011426193,0.012296297840445242,18.0,wilcoxon,BO_3_0.01_1.5_GP_GP_HEDGE
+15,spark_linear_gigantic,BO_3_0.01_1.5_GP_GP_HEDGE,BO_3_0.01_GP_PI,0.8617274844321391,0.04216819709715596,30.0,wilcoxon,BO_3_0.01_1.5_GP_GP_HEDGE

@@ -1,0 +1,5 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+63,spark_pagerank_bigdata,BO_3_0.1_ET_PI,BO_3_0.01_ET_EI,2.2542790992744757,0.016102833947211386,24.0,wilcoxon,BO_3_0.1_ET_PI
+64,spark_pagerank_bigdata,BO_3_0.1_ET_PI,BO_3_0.01_ET_EI,2.601215359732723,0.010727872981872536,24.0,t-test,BO_3_0.1_ET_PI
+65,spark_pagerank_bigdata,BO_3_0.1_ET_PI,BO_3_0.01_ET_EI,2.4576467856004607,0.01149575086489088,30.0,wilcoxon,BO_3_0.1_ET_PI
+66,spark_pagerank_bigdata,BO_3_0.1_ET_PI,BO_3_0.01_ET_EI,2.70587544950725,0.00803599152376262,30.0,t-test,BO_3_0.1_ET_PI

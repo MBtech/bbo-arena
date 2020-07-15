@@ -1,0 +1,6 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+0,spark_linear_huge,BO_3_0.1_ET_PI,BO_6_0.01_ET_EI,-1.1236926396995093,0.03460246283803436,6.0,wilcoxon,BO_6_0.01_ET_EI
+1,spark_linear_huge,BO_3_0.1_ET_PI,BO_6_0.01_ET_EI,-2.136617291571187,0.03511910257612586,6.0,t-test,BO_6_0.01_ET_EI
+2,spark_linear_huge,BO_6_1.0_ET_LCB,BO_3_0.1_ET_PI,1.1236926396995093,0.03460246283803436,6.0,wilcoxon,BO_6_1.0_ET_LCB
+3,spark_linear_huge,BO_6_1.0_ET_LCB,BO_3_0.1_ET_PI,2.136617291571187,0.03511910257612586,6.0,t-test,BO_6_1.0_ET_LCB
+4,spark_linear_huge,BO_3_0.1_ET_PI,BO_6_0.01_ET_EI,-1.6407291303587928,0.04796598078104622,12.0,wilcoxon,BO_6_0.01_ET_EI

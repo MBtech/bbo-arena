@@ -7,6 +7,7 @@ MEMORY=$3
 BENCHMARK=$4
 PARTITIONS=$5
 SCALE=$6
+DIRECTORY=$7
 
 rm ~/.ssh/known_hosts
 
@@ -17,6 +18,7 @@ ssh -t -i $KEYPATH ubuntu@$MASTER_IP "
   sed -i \"s/hibench.default.shuffle.parallelism.*/hibench.default.shuffle.parallelism    $PARTITIONS/g\" ~/HiBench/conf/hibench.conf
   sed -i \"s/spark.executor.memory.*/spark.executor.memory    $MEMORY/g\" ~/HiBench/conf/spark.conf
   sed -i \"s/spark.driver.memory.*/spark.driver.memory    14G/g\" ~/HiBench/conf/spark.conf
+  sed -i \"s/hibench.hdfs.master.*/hibench.hdfs.master    s3a:\\/\\/bbo-dataset/g\" ~/HiBench/conf/hadoop.conf
 "
 
-ssh -t -i $KEYPATH ubuntu@$MASTER_IP "/usr/bin/time -f \"%e\" ~/HiBench/bin/workloads/$BENCHMARK/prepare/prepare.sh" > prep.log
+ssh -t -i $KEYPATH ubuntu@$MASTER_IP "/usr/bin/time -f \"%e\" ~/HiBench/bin/workloads/$BENCHMARK/prepare/prepare.sh" > $DIRECTORY/prep.log

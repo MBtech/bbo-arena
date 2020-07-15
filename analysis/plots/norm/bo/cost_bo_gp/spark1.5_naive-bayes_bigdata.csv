@@ -1,0 +1,8 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+71,spark1.5_naive-bayes_bigdata,BO_3_1.0_GP_LCB,BO_3_0.01_GP_EI,5.025594689208235,4.6075646837682016e-08,18.0,wilcoxon,BO_3_1.0_GP_LCB
+72,spark1.5_naive-bayes_bigdata,BO_3_1.0_GP_LCB,BO_3_0.01_GP_EI,6.956139402196603,3.958523340861574e-10,18.0,t-test,BO_3_1.0_GP_LCB
+73,spark1.5_naive-bayes_bigdata,BO_3_0.01_1.0_GP_GP_HEDGE,BO_3_0.01_GP_EI,1.3787639750914225,0.011412036386001651,18.0,wilcoxon,BO_3_0.01_1.0_GP_GP_HEDGE
+74,spark1.5_naive-bayes_bigdata,BO_3_1.0_GP_LCB,BO_3_0.01_GP_PI,4.3500003414134385,4.5212455869870085e-06,18.0,wilcoxon,BO_3_1.0_GP_LCB
+75,spark1.5_naive-bayes_bigdata,BO_3_1.0_GP_LCB,BO_3_0.01_GP_PI,5.630418642175332,1.7154161205656606e-07,18.0,t-test,BO_3_1.0_GP_LCB
+76,spark1.5_naive-bayes_bigdata,BO_3_0.01_1.0_GP_GP_HEDGE,BO_3_1.0_GP_LCB,-3.6744059936186413,1.7030832128910917e-05,18.0,wilcoxon,BO_3_1.0_GP_LCB
+77,spark1.5_naive-bayes_bigdata,BO_3_0.01_1.0_GP_GP_HEDGE,BO_3_1.0_GP_LCB,-4.542483905439948,1.5855593150053915e-05,18.0,t-test,BO_3_1.0_GP_LCB

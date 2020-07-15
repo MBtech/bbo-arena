@@ -1,0 +1,3 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+64,spark_lr_huge,BO_3_1.0_RF_LCB,BO_3_0.1_RF_EI,1.747583338428378,0.028976682681389285,6.0,wilcoxon,BO_3_1.0_RF_LCB
+65,spark_lr_huge,BO_3_1.0_RF_LCB,BO_3_0.1_RF_EI,2.4122789822494526,0.01771369280222504,6.0,t-test,BO_3_1.0_RF_LCB

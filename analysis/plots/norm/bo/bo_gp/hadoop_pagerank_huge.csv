@@ -1,0 +1,2 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+0,hadoop_pagerank_huge,BO_6_0.01_1.5_GP_GP_HEDGE,BO_6_0.2_GP_EI,-0.6652536179816114,0.023004096869941537,18.0,wilcoxon,BO_6_0.01_1.5_GP_GP_HEDGE

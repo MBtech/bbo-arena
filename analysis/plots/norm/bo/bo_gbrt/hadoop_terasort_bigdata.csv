@@ -1,0 +1,4 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+10,hadoop_terasort_bigdata,BO_3_1.0_GBRT_LCB,BO_3_0.2_GBRT_EI,1.6579636800474356,0.03488862329701984,12.0,wilcoxon,BO_3_1.0_GBRT_LCB
+11,hadoop_terasort_bigdata,BO_3_1.0_GBRT_LCB,BO_3_0.2_GBRT_EI,2.0095484936957484,0.01689108740979245,18.0,wilcoxon,BO_3_1.0_GBRT_LCB
+12,hadoop_terasort_bigdata,BO_3_1.0_GBRT_LCB,BO_3_0.2_GBRT_EI,2.0239384717870545,0.04569842523706431,18.0,t-test,BO_3_1.0_GBRT_LCB

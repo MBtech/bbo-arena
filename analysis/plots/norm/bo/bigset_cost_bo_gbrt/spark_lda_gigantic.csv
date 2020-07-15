@@ -1,0 +1,3 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+8,spark_lda_gigantic,BO_9_0.01_GBRT_PI,BO_9_0.01_GBRT_EI,0.9099842235603389,0.017340905685188524,12.0,wilcoxon,BO_9_0.01_GBRT_PI
+9,spark_lda_gigantic,BO_9_1.5_GBRT_LCB,BO_9_0.01_GBRT_PI,-0.7755547359889252,0.016644883860113348,12.0,wilcoxon,BO_9_0.01_GBRT_PI

@@ -1,0 +1,4 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+32,spark1.5_regression_huge,BO_6_1.5_GP_LCB,BO_6_0.2_GP_EI,-1.4304676241573508,0.03296983688545101,18.0,wilcoxon,BO_6_1.5_GP_LCB
+33,spark1.5_regression_huge,BO_6_0.01_1.5_GP_GP_HEDGE,BO_6_1.5_GP_LCB,1.2339937577068232,0.03471205699001426,18.0,wilcoxon,BO_6_0.01_1.5_GP_GP_HEDGE
+34,spark1.5_regression_huge,BO_6_1.5_GP_LCB,BO_6_0.2_GP_EI,-2.038394561356142,0.044204209056149794,24.0,t-test,BO_6_1.5_GP_LCB

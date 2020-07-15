@@ -9,12 +9,44 @@ from scp import SCPClient
 import gevent
 import re
 import requests
+import fileinput 
+
+spotPrices = {
+    'm5.large': 0.03,
+    'm5.xlarge': 0.05,
+    'm5.2xlarge': 0.1,
+    'm5.4xlarge': 0.2,
+    'm5a.large': 0.03,
+    'm5a.xlarge': 0.05,
+    'm5a.2xlarge': 0.1,
+    'm5a.4xlarge': 0.2,
+    'c5n.large': 0.03, # 3.9G in reality 
+    'c5n.xlarge': 0.05,
+    'c5n.2xlarge': 0.1,
+    'c5n.4xlarge': 0.2,
+    'c5.large': 0.03,
+    'c5.xlarge': 0.05,
+    'c5.2xlarge': 0.1,
+    'c5.4xlarge': 0.2,
+    'r5.large': 0.03,
+    'r5.xlarge': 0.05,
+    'r5.2xlarge': 0.1,
+    'r5.4xlarge': 0.2,
+}
 
 memory = {
     'm5.large': 6,
     'm5.xlarge': 14,
     'm5.2xlarge': 29,
     'm5.4xlarge': 60,
+    'm5a.large': 6,
+    'm5a.xlarge': 14,
+    'm5a.2xlarge': 29,
+    'm5a.4xlarge': 60,
+    'c5n.large': 3, # 3.9G in reality 
+    'c5n.xlarge': 8,
+    'c5n.2xlarge': 19,
+    'c5n.4xlarge': 39,
     'c5.large': 2,
     'c5.xlarge': 6,
     'c5.2xlarge': 14,
@@ -35,6 +67,38 @@ cpus = {
     '2xlarge': 8,
     '4xlarge': 16,
 }
+
+def editFiles(region, instType, numInstances, spotPrice):
+    replacementString = 'regions = '+ region
+    stringToBeReplaced = 'regions = '
+    editFile = '../../ansible-spark/inventory/ec2.ini'
+    changeLine(replacementString, stringToBeReplaced, editFile)
+
+    replacementString = "region: " + region
+    stringToBeReplaced = "region: "
+    editFile = '../../ansible-spark/group_vars/all/main.yml'
+    changeLine(replacementString, stringToBeReplaced, editFile)
+
+    replacementString = "instance_type: " + instType
+    stringToBeReplaced = "instance_type: "
+    editFile = '../../ansible-spark/group_vars/all/main.yml'
+    changeLine(replacementString, stringToBeReplaced, editFile)
+
+    replacementString = "slave_count: " + str(numInstances)
+    stringToBeReplaced = "slave_count: "
+    editFile = '../../ansible-spark/group_vars/all/main.yml'
+    changeLine(replacementString, stringToBeReplaced, editFile)
+
+    replacementString = "spot_price: " + str(spotPrice)
+    stringToBeReplaced = "spot_price: "
+    editFile = '../../ansible-spark/group_vars/all/main.yml'
+    changeLine(replacementString, stringToBeReplaced, editFile)
+
+def changeLine(replacementString, stringToBeReplaced, filename):
+    for line in fileinput.input([filename], inplace=True):
+        if line.strip().startswith(stringToBeReplaced):
+            line = replacementString+'\n'
+        sys.stdout.write(line)
 
 def getNWorkers(url):
     r = requests.get(url = url)
@@ -74,35 +138,35 @@ def my_special_round(x, base=10):
     return int(base * math.ceil(float(x)/base))
 
 def start_parallel(client, output="/tmp/sar.dat", interval=5):
-    result = client.run_command("rm -rf {}".format(output))
+    result = client.run_command("rm -rf {}".format(output), greenlet_timeout=300)
     client.join(result)
     # result = client.run_command("mkdir -p {}".format(output))
     # client.join(result)
     cmd_start = "nohup sar -p -A -o {} {} > /dev/null 2>&1 &".format(output, interval)
     print(cmd_start)
-    result = client.run_command(cmd_start)
+    result = client.run_command(cmd_start, greenlet_timeout=300)
     client.join(result)
 
 def stop_parallel(client):
     cmd_kill = "pkill -x sar"
-    result = client.run_command(cmd_kill)
+    result = client.run_command(cmd_kill, greenlet_timeout=300)
     client.join(result)
 
 def export_parallel(client, input="/tmp/sar.dat", output="/tmp/sar.csv", interval=5):
-    result = client.run_command("rm -rf {}".format(output))
+    result = client.run_command("rm -rf {}".format(output), greenlet_timeout=300)
     client.join(result)
     # TODO: this tool does not support multiple devices
     cmd_general = 'sadf -dh -t {} {} -- -p -bBqSwW -u ALL -I SUM -r ALL | csvcut -d ";" -C "# hostname,interval,CPU,INTR" | sed "1s/\[\.\.\.\]//g" > {}'.format(interval, input, "/tmp/sar_general.csv")
     cmd_disk = 'sadf -dh -t {} {} -- -p -d | csvcut -d ";" -C "# hostname,interval,DEV" | sed "1s/\[\.\.\.\]//g" > {}'.format(interval, input, "/tmp/sar_disk.csv")
     cmd_network = 'sadf -dh -t {} {} -- -p -n DEV | csvcut -d ";" -C "# hostname,interval,IFACE" | sed "1s/\[\.\.\.\]//g" > {}'.format(interval, input, "/tmp/sar_network.csv")
     cmd_join = 'csvjoin -c timestamp /tmp/sar_general.csv /tmp/sar_disk.csv | csvjoin -c timestamp - /tmp/sar_network.csv | csvformat -u 3 > {}'.format("/tmp/sar.csv")
-    result = client.run_command(cmd_general)
+    result = client.run_command(cmd_general, greenlet_timeout=300)
     client.join(result)
-    result = client.run_command(cmd_disk)
+    result = client.run_command(cmd_disk, greenlet_timeout=300)
     client.join(result)
-    result = client.run_command(cmd_network)
+    result = client.run_command(cmd_network, greenlet_timeout=300)
     client.join(result)
-    result = client.run_command(cmd_join)
+    result = client.run_command(cmd_join, greenlet_timeout=300)
     client.join(result)
 
 def getfiles_parallel(client, framework, end_index, confFile, ips, parentDir='sar_logs/'):
@@ -144,12 +208,12 @@ def export(client, input="/tmp/sar.dat", output="/tmp/sar.csv", interval=5):
 #    client.exec_command(cmd_create)
 #    client.exec_command(cmd_header)
 
-def getfiles(scp, dir, filename, parentDir='sar_logs/'):
+def getfiles(scp, dir, filename):
     
-    if not os.path.exists(parentDir+dir):
-        os.makedirs(parentDir+dir)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
     print(dir)
-    scp.get('/tmp/sar.csv', parentDir+dir+filename)
+    scp.get('/tmp/sar.csv', dir+filename)
 
 def getEnv(filename='environment'):
     fp = open(filename, 'r')

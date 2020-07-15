@@ -1,0 +1,4 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+26,spark_pagerank_huge,BO_3_1.0_GBRT_LCB,BO_3_0.2_GBRT_EI,-1.089223540322224,0.041370065444893876,24.0,wilcoxon,BO_3_1.0_GBRT_LCB
+27,spark_pagerank_huge,BO_3_1.0_GBRT_LCB,BO_3_0.2_GBRT_EI,-2.0976177324783247,0.03851206088487846,24.0,t-test,BO_3_1.0_GBRT_LCB
+28,spark_pagerank_huge,BO_3_1.0_GBRT_LCB,BO_3_0.05_GBRT_PI,-1.382210885029151,0.036315769052308496,24.0,wilcoxon,BO_3_1.0_GBRT_LCB

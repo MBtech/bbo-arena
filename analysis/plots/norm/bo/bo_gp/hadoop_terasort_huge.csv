@@ -1,0 +1,5 @@
+,benchmark,algorithm,best algo,statistic,pvalue,budget,test-name,better
+2,hadoop_terasort_huge,BO_6_1.5_GP_LCB,BO_6_0.2_GP_EI,0.5377179502856548,0.038088867282607235,12.0,wilcoxon,BO_6_1.5_GP_LCB
+3,hadoop_terasort_huge,BO_6_1.5_GP_LCB,BO_6_0.2_GP_EI,-1.616600760794693,0.03255590757059885,18.0,wilcoxon,BO_6_1.5_GP_LCB
+4,hadoop_terasort_huge,BO_6_0.01_1.5_GP_GP_HEDGE,BO_6_0.2_GP_EI,-1.0823297204467668,0.04767038065616143,24.0,wilcoxon,BO_6_0.2_GP_EI
+5,hadoop_terasort_huge,BO_6_0.01_1.5_GP_GP_HEDGE,BO_6_0.01_GP_PI,-1.1616086490145234,0.04910953919720455,24.0,wilcoxon,BO_6_0.01_GP_PI

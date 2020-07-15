@@ -6,7 +6,7 @@ import sys
 import os 
 
 figlabels = {
-    'Experiment': 'Seed',
+    'Experiment': 'Initial\n Samples',
     'Init Samples': '# Samples',
     'temp': 'T',
     'Budget': 'Opt. Budget',
@@ -24,11 +24,11 @@ def relabel(labels):
 
 imp = sys.argv[1]
 
-df = pd.read_csv('plots/importance/'+ imp +'.csv', header=0, names=['Parameters', 'Importance'])
+df = pd.read_csv('plots/importance/'+ imp +'.csv', header=0, names=['Hyper-parameters', 'Importance'])
 
 
 plt.figure(figsize=(3,2))    
-ax = sns.boxplot(x='Parameters', y='Importance',  data=df)
+ax = sns.boxplot(x='Hyper-parameters', y='Importance',  data=df)
 ax.set_xticklabels(relabel(ax.get_xticklabels()), fontsize=8)
 dir = 'plots/importance/'
 os.makedirs(dir, exist_ok=True)

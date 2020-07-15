@@ -14,9 +14,9 @@
 
 "bo_estimators": ["RF", "ET", "GBRT", "GP"],
 "bo_acq": {
-      "RF": ["PI"],
-      "ET": ["PI"],
-      "GBRT": ["PI"],
-      "GP": ["LCB"]
+  "RF": ["LCB", "EI", "PI"],
+  "ET": ["LCB", "EI", "PI"],
+  "GBRT": ["LCB", "EI", "PI"],
+  "GP": ["LCB", "EI", "PI", "gp_hedge"]
     }
 }
