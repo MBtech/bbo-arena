@@ -1,4 +1,8 @@
 # bbo-arena
+## Evaluation 
+The results from our evaluation of the blackbox algorithms will be included in this repository. 
+
+For stats and results from the evaluation take a look at the `docs` directory. Plots and logs will be added soon as well. 
 
 ## Blackbox optimization libraries/algorithms (under test)
 - SMAC -> Working using [pysmac](https://github.com/automl/pysmac) (There is a problem with [SMACv3](https://github.com/automl/SMAC3) on MacOS)
@@ -48,6 +52,7 @@ Guided local search is a special case of tabu search.
 Hill climbing (with restart) is a case of iterated local search.
 
 Algorithms such as genetic algorithms and evolutionary algorithms are use multiple solutions aren't appropriate because of the number of samples they require to be useful.
+
 
 ## TODO:
 - The libraries need to be modified in case of continuous optimization algorithms cases so that same configurations aren't counted twice.
