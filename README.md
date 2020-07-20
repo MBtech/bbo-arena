@@ -1,6 +1,7 @@
 # bbo-arena
 ## Evaluation 
 The results from our evaluation of the blackbox algorithms will be included in this repository. 
+Best hyper-parameter configuration for two workloads and two objection functions in our evaluation are present [here](https://github.com/MBtech/bbo-arena/blob/master/docs/best-hyperparams.md).
 
 For stats and results from the evaluation take a look at the `docs` directory. Plots and logs will be added soon as well. 
 
