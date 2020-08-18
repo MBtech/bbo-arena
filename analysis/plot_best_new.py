@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils import parseLogs, getBest, getAll, prices
+from utils import transform_labels as tl 
 import sys 
 import numpy as np
 import os
@@ -221,14 +222,18 @@ h, l = ax1.get_legend_handles_labels()
 #     # l = axi.legend(ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
 # else:
 #     ax1.legend(loc='upper right',  ncol=config["legend_cols"], prop={'size': 9}, handles=h, labels=l)
+labels = tl(l)
+if len(labels) > 4:
+    ax1.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower right", ncol=3, prop={'size': 9}, handles=h, labels=labels)
+else:
+    ax1.legend(loc='upper right',  ncol=2, prop={'size': 9}, handles=h, labels=labels)
 
-ax1.legend(loc='upper right',  ncol=2, prop={'size': 9}, handles=h, labels=l)
+# print(best_algo_normalized)
+# ax2 = ax1.twinx()
+# ax2.set_ylim([1.0, 1.5])
+# sns.lineplot(x='budget', y='norm. perf', color='black', marker="o", ci=None, data=best_algo_normalized, ax=ax2)
+# ax2.set_ylabel('Norm. Perf w.r.t. Best Conf.')
 
-print(best_algo_normalized)
-ax2 = ax1.twinx()
-ax2.set_ylim([1.0, 1.5])
-sns.lineplot(x='budget', y='norm. perf', color='black', marker="o", ci=None, data=best_algo_normalized, ax=ax2)
-ax2.set_ylabel('Norm. Perf w.r.t. Best Conf.')
 dir = 'plots/scores/' + prefix +"/"
 
 os.makedirs(dir, exist_ok=True)

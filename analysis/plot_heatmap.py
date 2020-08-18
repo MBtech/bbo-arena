@@ -49,6 +49,8 @@ for system in config["systems"]:
             
             if config["dataset"] == "l":
                 df["Num"] = df.apply(lambda x: (x["Num"] / dividers[x["Size"]]), axis=1)
+            
+            # Uncomment this line for a uniform small heatmap
             # df = df[df["Num"].isin(num_of_nodes)]
 
             df["Family"] = df['Type'] + '.'+df['Size']

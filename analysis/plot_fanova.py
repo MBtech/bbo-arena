@@ -9,7 +9,7 @@ figlabels = {
     'Experiment': 'Initial\n Samples',
     'Init Samples': '# Samples',
     'temp': 'T',
-    'Budget': 'Opt. Budget',
+    'Budget': 'Opt. \nBudget',
     'schedule_constant': r'$\alpha$',
     'xi': 'xi',
     'kappa': r'$\kappa$',
@@ -27,9 +27,9 @@ imp = sys.argv[1]
 df = pd.read_csv('plots/importance/'+ imp +'.csv', header=0, names=['Hyper-parameters', 'Importance'])
 
 
-plt.figure(figsize=(3,2))    
+plt.figure(figsize=(4,2))    
 ax = sns.boxplot(x='Hyper-parameters', y='Importance',  data=df)
-ax.set_xticklabels(relabel(ax.get_xticklabels()), fontsize=8)
+ax.set_xticklabels(relabel(ax.get_xticklabels()), fontsize=9)
 dir = 'plots/importance/'
 os.makedirs(dir, exist_ok=True)
 # plt.show()

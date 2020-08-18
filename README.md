@@ -1,9 +1,14 @@
 # bbo-arena
+**Note: This repository is being updated with the latest version of the code and the data. 
+Please contact Muhammad Bilal @ muhammad.bilal@uclouvain.be if you have any question.**
+
 ## Evaluation 
 The results from our evaluation of the blackbox algorithms will be included in this repository. 
 Best hyper-parameter configuration for two workloads and two objection functions in our evaluation are present [here](https://github.com/MBtech/bbo-arena/blob/master/docs/best-hyperparams.md).
 
 For stats and results from the evaluation take a look at the `docs` directory. Plots and logs will be added soon as well. 
+
+All the plots related to the analysis are in `analysis/plots` directory. 
 
 ## Blackbox optimization libraries/algorithms (under test)
 - SMAC -> Working using [pysmac](https://github.com/automl/pysmac) (There is a problem with [SMACv3](https://github.com/automl/SMAC3) on MacOS)
