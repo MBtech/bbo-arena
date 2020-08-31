@@ -1,6 +1,17 @@
 # bbo-arena
-**Note: This repository is being updated with the latest version of the code and the data. 
+**Note: This repository is being updated with the latest version of the code and the data.   
 Please contact Muhammad Bilal @ muhammad.bilal@uclouvain.be if you have any question.**
+
+This is the accompanying github repository for our research work:
+
+> **Do the Best Cloud Configurations Grow on Trees? An Experimental Evaluation of Black Box Algorithms for Optimizing Cloud Workloads.** </br>
+> Muhammad Bilal, Marco Serafini, Marco Canini and Rodrigo Rodrigues. </br>
+> Proceedings of the VLDB Endowment, 13(11). </br>
+
+## Data 
+We provide two accompanying dataset:
+1. Cloud configuration performance dataset ([repo](https://github.com/MBtech/bbo-arena-dataset))
+2. Data from optimization runs ([repo](https://github.com/MBtech/bbo-arena-opt-data))
 
 ## Evaluation 
 The results from our evaluation of the blackbox algorithms will be included in this repository. 
