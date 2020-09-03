@@ -1,5 +1,5 @@
 # bbo-arena
-**Note: This repository is being updated with the latest version of the code to make it easy to use the optimization algorithms tested in our work. Meanwhile if you want to use the data accumulated for this work please take a look at the [Data section](#data).**  
+**Note: This repository is being updated with the latest version of the code to make it easy to use the optimization algorithms tested in our work. Meanwhile if you want to use the data accumulated for this work for your own research, please take a look at the [Data section](#data).**  
 
 Contact: Bilal @ muhammad.bilal@uclouvain.be
 
