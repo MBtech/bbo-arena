@@ -20,7 +20,7 @@ spotPrices = {
     'm5a.xlarge': 0.05,
     'm5a.2xlarge': 0.1,
     'm5a.4xlarge': 0.2,
-    'c5n.large': 0.03, # 3.9G in reality 
+    'c5n.large': 0.03, 
     'c5n.xlarge': 0.05,
     'c5n.2xlarge': 0.1,
     'c5n.4xlarge': 0.2,
