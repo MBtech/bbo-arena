@@ -35,4 +35,4 @@ If you are on mac make sure that you have xcode tools installed using
 
 `apt-get install swig` or `brew install swig@3` if you are on mac. Make sure you have swig 3 and not version 4.
 
-`pip install cython cma hyperopt bbopt pydoe scikit-optimize statsmodels joblib`
+`pip install -r requirements`
