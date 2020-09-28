@@ -23,6 +23,6 @@ ConfigSpace==0.4.15
 GPyOpt==1.2.6
 pssh==2.3.1
 pyDOE==0.3.8
-pyfanova==0.1
+fanova==2.0.19
 pyrfr==0.8.0
 scikit_learn==0.23.2
